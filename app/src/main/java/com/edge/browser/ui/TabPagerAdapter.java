@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ public class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.TabVie
 
     public interface WebViewProvider {
         IBrowserView getOrCreateWebView(TabItem tab);
+        View getNewTabPage();
     }
 
     private final Context context;
@@ -61,19 +63,38 @@ public class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.TabVie
     @Override
     public void onBindViewHolder(@NonNull TabViewHolder holder, int position) {
         TabItem tab = tabs.get(position);
+        FrameLayout container = (FrameLayout) holder.itemView;
+        container.removeAllViews();
+
+        // 新标签页使用特殊页面
+        if (isNewTab(tab)) {
+            View newTabPage = webViewProvider.getNewTabPage();
+            if (newTabPage != null) {
+                if (newTabPage.getParent() != null) {
+                    ((ViewGroup) newTabPage.getParent()).removeView(newTabPage);
+                }
+                container.addView(newTabPage, new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            return;
+        }
+
         IBrowserView webView = webViewProvider.getOrCreateWebView(tab);
         if (webView == null) return;
 
         View view = webView.getView();
-        FrameLayout container = (FrameLayout) holder.itemView;
-        container.removeAllViews();
-
         if (view.getParent() != null) {
             ((ViewGroup) view.getParent()).removeView(view);
         }
         container.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+    }
+
+    private boolean isNewTab(TabItem tab) {
+        String url = tab.getUrl();
+        return url == null || url.isEmpty() || "about:blank".equals(url);
     }
 
     @Override

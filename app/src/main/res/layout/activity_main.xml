@@ -3,219 +3,291 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
+    <!-- 主内容区域 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:titleTextColor="@android:color/white" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_url_bar">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/url_bar"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginVertical="4dp"
-                android:background="@drawable/url_bar_background"
-                android:hint="输入网址或搜索"
-                android:inputType="textUri|text"
-                android:maxLines="1"
-                android:paddingHorizontal="12dp"
-                android:textSize="14sp" />
-
-        </RelativeLayout>
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@android:color/transparent"
-            android:max="100"
-            android:indeterminateOnly="false" />
-
-        <LinearLayout
-            android:id="@+id/main_container"
+        <!-- 网页内容区域 -->
+        <FrameLayout
+            android:id="@+id/content_area"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/split_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <FrameLayout
-                android:id="@+id/split_left"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <View
-                android:id="@+id/split_divider"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="#CCCCCC" />
-
-            <FrameLayout
-                android:id="@+id/split_right"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-        </LinearLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            app:tabGravity="fill"
-            app:tabMode="scrollable"
-            app:tabIndicatorColor="@android:color/white"
-            app:tabTextColor="@android:color/darker_gray"
-            app:tabSelectedTextColor="@android:color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/bottom_nav_bg"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/btn_back"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="后退"
-                android:src="@drawable/ic_arrow_back" />
-
-            <ImageButton
-                android:id="@+id/btn_forward"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="前进"
-                android:src="@drawable/ic_arrow_forward" />
-
-            <ImageButton
-                android:id="@+id/btn_refresh"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="刷新"
-                android:src="@drawable/ic_refresh" />
-
-            <ImageButton
-                android:id="@+id/btn_home"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="主页"
-                android:src="@drawable/ic_home" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:id="@+id/btn_reader_mode"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="沉浸式阅读"
-                android:src="@drawable/ic_reader_mode"
+            <!-- 进度条 -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="top"
+                android:background="@android:color/transparent"
+                android:max="100"
+                android:indeterminateOnly="false"
+                android:progressTint="#0078D4"
                 android:visibility="gone" />
 
-            <ImageButton
-                android:id="@+id/btn_read_aloud"
-                android:layout_width="40dp"
+        </FrameLayout>
+
+        <!-- Edge 底部栏 -->
+        <LinearLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/edge_bottom_bar_bg"
+            android:elevation="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="6dp">
+
+            <!-- 地址栏 (Edge 药丸形状) -->
+            <LinearLayout
+                android:id="@+id/url_bar_container"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/edge_url_bar_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp">
+
+                <!-- 锁图标 -->
+                <ImageView
+                    android:id="@+id/url_lock_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_edge_lock"
+                    android:contentDescription="安全"
+                    android:visibility="gone" />
+
+                <!-- URL 文字 -->
+                <TextView
+                    android:id="@+id/url_bar_text"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="搜索或输入网址"
+                    android:textColor="#9E9E9E"
+                    android:textSize="14sp"
+                    android:ellipsize="end"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <!-- 分享按钮 -->
+                <ImageView
+                    android:id="@+id/btn_share"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_edge_share"
+                    android:contentDescription="分享"
+                    android:padding="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <!-- 刷新按钮 -->
+                <ImageView
+                    android:id="@+id/btn_refresh_bar"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_refresh"
+                    android:contentDescription="刷新"
+                    android:padding="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            </LinearLayout>
+
+            <!-- 底部导航按钮行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="大声朗读"
-                android:src="@drawable/ic_volume_up" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/btn_pip"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="画中画"
-                android:src="@drawable/ic_pip" />
+                <ImageView
+                    android:id="@+id/btn_back"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:contentDescription="后退"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:alpha="0.4" />
 
-            <ImageButton
-                android:id="@+id/btn_tabs"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="标签列表"
-                android:src="@drawable/ic_tabs" />
+                <ImageView
+                    android:id="@+id/btn_forward"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_arrow_forward"
+                    android:contentDescription="前进"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:alpha="0.4" />
 
-            <ImageButton
-                android:id="@+id/btn_menu"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="菜单"
-                android:src="@drawable/ic_more_vertical" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <!-- Edge 主页按钮 -->
+                <ImageView
+                    android:id="@+id/btn_home"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_edge_home"
+                    android:contentDescription="主页"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <!-- 标签页按钮 (带数量) -->
+                <FrameLayout
+                    android:id="@+id/btn_tabs_container"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_tabs"
+                        android:contentDescription="标签页" />
+
+                    <TextView
+                        android:id="@+id/tab_count_text"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:background="@drawable/tab_count_badge"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/btn_menu"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_more_vertical"
+                    android:contentDescription="菜单"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
+    <!-- 标签页侧边栏 -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/tabs_drawer"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:background="@android:color/white">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tabs_recycler"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingVertical="8dp" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:background="#F5F5F5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="标签页"
+                    android:textColor="#212121"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tab_count_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 个标签页"
+                    android:textColor="#9E9E9E"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tabs_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingVertical="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:id="@+id/btn_new_incognito"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="InPrivate 标签页"
+                    android:textColor="#0078D4"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/btn_close_all"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="关闭所有标签页"
+                    android:textColor="#E81123"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <FrameLayout
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/bottom_sheet_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

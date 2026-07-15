@@ -3,20 +3,27 @@ package com.edge.browser;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -37,6 +44,7 @@ import com.edge.browser.tab.TabItem;
 import com.edge.browser.tab.TabManager;
 import com.edge.browser.theme.ThemeManager;
 import com.edge.browser.tools.SideToolsManager;
+import com.edge.browser.ui.NewTabPage;
 import com.edge.browser.ui.TabListAdapter;
 import com.edge.browser.ui.TabPagerAdapter;
 import com.edge.browser.webview.ChromiumWebViewFactory;
@@ -56,15 +64,18 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private static final String TAG = "MainActivity";
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    // Views
-    private Toolbar toolbar;
-    private EditText urlBar;
-    private ImageButton btnBack, btnForward, btnRefresh, btnHome, btnTabs, btnMenu;
+    // Views - 底部栏
+    private TextView urlBarText;
+    private ImageView urlLockIcon;
+    private ImageView btnShare, btnRefreshBar;
+    private ImageView btnBack, btnForward, btnHome, btnMenu;
+    private FrameLayout btnTabsContainer;
+    private TextView tabCountText;
     private ProgressBar progressBar;
     private ViewPager2 viewPager;
     private DrawerLayout drawerLayout;
     private RecyclerView tabsRecyclerView;
-    private View bottomSheet;
+    private TextView tabCountLabel;
 
     // Managers
     private TabManager tabManager;
@@ -90,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     // WebView cache
     private final Map<String, IBrowserView> webViewCache = new HashMap<>();
 
+    // New tab page
+    private NewTabPage newTabPage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,13 +111,12 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             setContentView(R.layout.activity_main);
             initManagers();
             initViews();
-            setupToolbar();
             setupViewPager();
             setupTabDrawer();
-            setupBottomSheet();
             setupListeners();
             handleIntent(getIntent());
             checkGoogleWebView();
+            updateTabCount();
         } catch (Exception e) {
             BrowserLogger.getInstance().logCrash("MainActivity onCreate", e);
             Toast.makeText(this, "启动失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -138,25 +151,26 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     }
 
     private void initViews() {
-        toolbar = findViewById(R.id.toolbar);
-        urlBar = findViewById(R.id.url_bar);
+        // 底部地址栏
+        urlBarText = findViewById(R.id.url_bar_text);
+        urlLockIcon = findViewById(R.id.url_lock_icon);
+        btnShare = findViewById(R.id.btn_share);
+        btnRefreshBar = findViewById(R.id.btn_refresh_bar);
+
+        // 底部导航
         btnBack = findViewById(R.id.btn_back);
         btnForward = findViewById(R.id.btn_forward);
-        btnRefresh = findViewById(R.id.btn_refresh);
         btnHome = findViewById(R.id.btn_home);
-        btnTabs = findViewById(R.id.btn_tabs);
+        btnTabsContainer = findViewById(R.id.btn_tabs_container);
+        tabCountText = findViewById(R.id.tab_count_text);
         btnMenu = findViewById(R.id.btn_menu);
+
+        // 内容区
         progressBar = findViewById(R.id.progress_bar);
         viewPager = findViewById(R.id.view_pager);
         drawerLayout = findViewById(R.id.drawer_layout);
         tabsRecyclerView = findViewById(R.id.tabs_recycler);
-        bottomSheet = findViewById(R.id.bottom_sheet);
-    }
-
-    private void setupToolbar() {
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
+        tabCountLabel = findViewById(R.id.tab_count_label);
     }
 
     private void setupViewPager() {
@@ -164,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         viewPager.setAdapter(pagerAdapter);
         viewPager.setUserInputEnabled(true);
 
-        // Create initial tab
+        // 创建初始标签页
         TabItem initialTab = tabManager.addTab("新标签页", "about:blank");
         pagerAdapter.addTab(initialTab);
 
@@ -178,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                     if (wv != null) {
                         updateUrlBar(wv.getUrl());
                         updateNavigationButtons(wv.canGoBack(), wv.canGoForward());
+                        updateLockIcon(wv.getUrl());
                     }
                 }
             }
@@ -193,7 +208,9 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             }
             @Override public void onTabClosed(int index) {
                 tabManager.removeTab(index);
+                pagerAdapter.updateTabs(tabManager.getAllTabs());
                 tabListAdapter.updateTabs(tabManager.getAllTabs());
+                updateTabCount();
             }
             @Override public void onTabPinned(int index) {
                 tabManager.pinTab(index);
@@ -201,47 +218,117 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         });
         tabsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         tabsRecyclerView.setAdapter(tabListAdapter);
-    }
 
-    private void setupBottomSheet() {
-        // BottomSheet 在 DrawerLayout 中，不需要 CoordinatorLayout 的 Behavior
-        if (bottomSheet != null) {
-            bottomSheet.setVisibility(View.GONE);
+        // 新建 InPrivate 标签
+        TextView btnIncognito = drawerLayout.findViewById(R.id.btn_new_incognito);
+        if (btnIncognito != null) {
+            btnIncognito.setOnClickListener(v -> {
+                TabItem tab = tabManager.addTab("InPrivate", "about:blank");
+                pagerAdapter.addTab(tab);
+                viewPager.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
+                drawerLayout.closeDrawer(GravityCompat.END);
+                updateTabCount();
+            });
+        }
+
+        // 关闭所有标签
+        TextView btnCloseAll = drawerLayout.findViewById(R.id.btn_close_all);
+        if (btnCloseAll != null) {
+            btnCloseAll.setOnClickListener(v -> {
+                List<TabItem> tabs = tabManager.getAllTabs();
+                for (int i = tabs.size() - 1; i >= 0; i--) {
+                    tabManager.removeTab(i);
+                }
+                // 保留一个新标签页
+                TabItem newTab = tabManager.addTab("新标签页", "about:blank");
+                pagerAdapter.updateTabs(tabManager.getAllTabs());
+                tabListAdapter.updateTabs(tabManager.getAllTabs());
+                viewPager.setCurrentItem(0, false);
+                drawerLayout.closeDrawer(GravityCompat.END);
+                updateTabCount();
+            });
         }
     }
 
     private void setupListeners() {
+        // 地址栏点击 - 弹出 URL 输入框
+        urlBarText.setOnClickListener(v -> showUrlInputDialog());
+
+        // 后退
         btnBack.setOnClickListener(v -> {
             IBrowserView wv = getCurrentWebView();
             if (wv != null && wv.canGoBack()) wv.goBack();
         });
+
+        // 前进
         btnForward.setOnClickListener(v -> {
             IBrowserView wv = getCurrentWebView();
             if (wv != null && wv.canGoForward()) wv.goForward();
         });
-        btnRefresh.setOnClickListener(v -> {
+
+        // 主页
+        btnHome.setOnClickListener(v -> navigateTo("https://www.google.com"));
+
+        // 刷新 (地址栏右侧)
+        btnRefreshBar.setOnClickListener(v -> {
             IBrowserView wv = getCurrentWebView();
             if (wv != null) {
                 if (wv.isLoading()) wv.stopLoading();
                 else wv.reload();
             }
         });
-        btnHome.setOnClickListener(v -> navigateTo("https://www.google.com"));
-        btnTabs.setOnClickListener(v -> {
+
+        // 分享
+        btnShare.setOnClickListener(v -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv == null) return;
+            String url = wv.getUrl();
+            if (url != null && !url.isEmpty()) {
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("text/plain");
+                share.putExtra(Intent.EXTRA_TEXT, url);
+                startActivity(Intent.createChooser(share, "分享链接"));
+            }
+        });
+
+        // 标签页抽屉
+        btnTabsContainer.setOnClickListener(v -> {
             if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
                 drawerLayout.closeDrawer(GravityCompat.END);
             } else {
                 tabListAdapter.updateTabs(tabManager.getAllTabs());
+                updateTabCount();
                 drawerLayout.openDrawer(GravityCompat.END);
             }
         });
-        btnMenu.setOnClickListener(v -> showMainMenu());
 
-        urlBar.setOnEditorActionListener((v, actionId, event) -> {
-            String url = urlBar.getText().toString().trim();
-            if (!url.isEmpty()) navigateTo(url);
-            return true;
-        });
+        // 菜单
+        btnMenu.setOnClickListener(v -> showEdgeMenu());
+    }
+
+    // === URL 输入对话框 ===
+
+    private void showUrlInputDialog() {
+        EditText input = new EditText(this);
+        input.setHint("搜索或输入网址");
+        input.setText(urlBarText.getText().toString().replace("搜索或输入网址", ""));
+        input.setPadding(32, 24, 32, 24);
+        input.setTextSize(16);
+        input.setSelectAllOnFocus(true);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("输入网址")
+                .setView(input)
+                .setPositiveButton("前往", (d, which) -> {
+                    String url = input.getText().toString().trim();
+                    if (!url.isEmpty()) {
+                        navigateTo(url);
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .create();
+        dialog.show();
+        input.requestFocus();
     }
 
     private void handleIntent(Intent intent) {
@@ -254,6 +341,35 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     // === TabPagerAdapter.WebViewProvider ===
 
     @Override
+    public View getNewTabPage() {
+        if (newTabPage == null) {
+            newTabPage = new NewTabPage(this);
+            newTabPage.setCallback(new NewTabPage.NewTabCallback() {
+                @Override
+                public void onSearch(String query) {
+                    navigateTo(query);
+                }
+
+                @Override
+                public void onQuickLinkClick(String title, String url) {
+                    navigateTo(url);
+                }
+
+                @Override
+                public void onNewsClick(String title, String url) {
+                    navigateTo(url);
+                }
+
+                @Override
+                public void onVoiceSearch() {
+                    Toast.makeText(MainActivity.this, "语音搜索功能开发中", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        return newTabPage.getView();
+    }
+
+    @Override
     public IBrowserView getOrCreateWebView(TabItem tab) {
         IBrowserView wv = webViewCache.get(tab.getId());
         if (wv == null) {
@@ -261,12 +377,18 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             final IBrowserView finalWv = wv;
             wv.setCallback(new EdgeWebView.WebViewCallback() {
                 @Override public void onPageStarted(String url) {
-                    handler.post(() -> urlBar.setText(url));
+                    handler.post(() -> {
+                        urlBarText.setText(url);
+                        urlBarText.setTextColor(Color.parseColor("#212121"));
+                        updateLockIcon(url);
+                    });
                 }
                 @Override public void onPageFinished(String url, String title) {
                     handler.post(() -> {
-                        urlBar.setText(url);
+                        urlBarText.setText(url);
+                        urlBarText.setTextColor(Color.parseColor("#212121"));
                         updateNavigationButtons(finalWv.canGoBack(), finalWv.canGoForward());
+                        updateLockIcon(url);
                     });
                 }
                 @Override public void onProgressChanged(int progress) {
@@ -280,13 +402,13 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                     handler.post(() -> Toast.makeText(MainActivity.this,
                             "加载失败: " + desc, Toast.LENGTH_SHORT).show());
                 }
-                @Override public void onTitleChanged(String title) {
-                    handler.post(() -> {
-                        if (toolbar != null) toolbar.setTitle(title != null ? title : "极速浏览器");
-                    });
-                }
+                @Override public void onTitleChanged(String title) {}
                 @Override public void onUrlChanged(String url) {
-                    handler.post(() -> urlBar.setText(url));
+                    handler.post(() -> {
+                        urlBarText.setText(url);
+                        urlBarText.setTextColor(Color.parseColor("#212121"));
+                        updateLockIcon(url);
+                    });
                 }
             });
             webViewCache.put(tab.getId(), wv);
@@ -315,68 +437,163 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             if (url.contains(".") && !url.contains(" ")) {
                 url = "https://" + url;
             } else {
-                url = "https://www.google.com/search?q=" + url;
+                url = "https://www.bing.com/search?q=" + url;
             }
         }
-        urlBar.setText(url);
+        urlBarText.setText(url);
+        urlBarText.setTextColor(Color.parseColor("#212121"));
+
+        // 更新当前标签页的 URL
+        TabItem tab = tabManager.getTabAt(viewPager.getCurrentItem());
+        if (tab != null) {
+            tab.setUrl(url);
+            tab.setTitle(url);
+        }
+
         IBrowserView wv = getCurrentWebView();
-        if (wv != null) wv.loadUrl(url);
+        if (wv != null) {
+            wv.loadUrl(url);
+        } else {
+            // 新标签页，创建新的 WebView
+            newTab(url);
+        }
     }
 
     private void newTab(String url) {
         TabItem tab = tabManager.addTab("新标签页", url);
         pagerAdapter.addTab(tab);
         viewPager.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
+        updateTabCount();
     }
 
     private void updateUrlBar(String url) {
         if (url != null && !url.isEmpty() && !"about:blank".equals(url)) {
-            urlBar.setText(url);
+            urlBarText.setText(url);
+            urlBarText.setTextColor(Color.parseColor("#212121"));
+        }
+    }
+
+    private void updateLockIcon(String url) {
+        if (urlLockIcon == null) return;
+        if (url != null && url.startsWith("https://")) {
+            urlLockIcon.setVisibility(View.VISIBLE);
+        } else {
+            urlLockIcon.setVisibility(View.GONE);
         }
     }
 
     private void updateNavigationButtons(boolean canBack, boolean canForward) {
-        if (btnBack != null) btnBack.setEnabled(canBack);
-        if (btnForward != null) btnForward.setEnabled(canForward);
+        if (btnBack != null) {
+            btnBack.setAlpha(canBack ? 1.0f : 0.4f);
+            btnBack.setEnabled(canBack);
+        }
+        if (btnForward != null) {
+            btnForward.setAlpha(canForward ? 1.0f : 0.4f);
+            btnForward.setEnabled(canForward);
+        }
+    }
+
+    private void updateTabCount() {
+        int count = tabManager.getTabCount();
+        if (tabCountText != null) {
+            if (count > 0) {
+                tabCountText.setVisibility(View.VISIBLE);
+                tabCountText.setText(String.valueOf(count));
+            } else {
+                tabCountText.setVisibility(View.GONE);
+            }
+        }
+        if (tabCountLabel != null) {
+            tabCountLabel.setText(count + " 个标签页");
+        }
     }
 
     private IBrowserView getCurrentWebView() {
         int pos = viewPager.getCurrentItem();
         TabItem tab = tabManager.getTabAt(pos);
-        if (tab != null) return webViewCache.get(tab.getId());
+        if (tab != null) {
+            String url = tab.getUrl();
+            if (url == null || url.isEmpty() || "about:blank".equals(url)) return null;
+            return webViewCache.get(tab.getId());
+        }
         return null;
     }
 
-    // === Main Menu ===
+    // === Edge 风格菜单 (BottomSheet) ===
 
-    private void showMainMenu() {
-        IBrowserView wv = getCurrentWebView();
-        String[] items = wv != null && wv.isWebViewBased() ?
-                new String[]{"新标签", "阅读模式", "朗读", "截图", "添加到书签",
-                        "下载管理", "历史记录", "隐私设置", "性能中心", "任务管理器", "设置", "日志查看"} :
-                new String[]{"新标签", "截图", "添加到书签", "下载管理", "历史记录",
-                        "隐私设置", "性能中心", "设置", "日志查看"};
+    private void showEdgeMenu() {
+        View sheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_menu, null);
+        RecyclerView menuGrid = sheetView.findViewById(R.id.menu_grid);
+        menuGrid.setLayoutManager(new GridLayoutManager(this, 4));
 
-        new AlertDialog.Builder(this)
-                .setTitle("菜单")
-                .setItems(items, (dialog, which) -> {
-                    String item = items[which];
-                    switch (item) {
-                        case "新标签": newTab("about:blank"); break;
-                        case "阅读模式": enableReaderMode(); break;
-                        case "朗读": startReadAloud(); break;
-                        case "截图": takeScreenshot(); break;
-                        case "添加到书签": addBookmark(); break;
-                        case "下载管理": startActivity(new Intent(this, DownloadActivity.class)); break;
-                        case "历史记录": startActivity(new Intent(this, HistoryActivity.class)); break;
-                        case "隐私设置": showPrivacyDialog(); break;
-                        case "性能中心": startActivity(new Intent(this, PerformanceActivity.class)); break;
-                        case "任务管理器": startActivity(new Intent(this, TaskManagerActivity.class)); break;
-                        case "设置": startActivity(new Intent(this, SettingsActivity.class)); break;
-                        case "日志查看": showLogViewer(); break;
-                    }
-                })
-                .show();
+        List<MenuItem> menuItems = new ArrayList<>();
+        menuItems.add(new MenuItem("新标签页", R.drawable.ic_tabs, () -> {
+            newTab("about:blank");
+            updateTabCount();
+        }));
+        menuItems.add(new MenuItem("InPrivate", R.drawable.ic_edge_home, () -> {
+            TabItem tab = tabManager.addTab("InPrivate", "about:blank");
+            pagerAdapter.addTab(tab);
+            viewPager.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
+            updateTabCount();
+        }));
+        menuItems.add(new MenuItem("阅读模式", R.drawable.ic_reader_mode, this::enableReaderMode));
+        menuItems.add(new MenuItem("朗读", R.drawable.ic_volume_up, this::startReadAloud));
+        menuItems.add(new MenuItem("截图", R.drawable.ic_pip, this::takeScreenshot));
+        menuItems.add(new MenuItem("添加书签", R.drawable.ic_edge_search, this::addBookmark));
+        menuItems.add(new MenuItem("下载", R.drawable.ic_download,
+                () -> startActivity(new Intent(this, DownloadActivity.class))));
+        menuItems.add(new MenuItem("历史", R.drawable.ic_refresh,
+                () -> startActivity(new Intent(this, HistoryActivity.class))));
+        menuItems.add(new MenuItem("隐私", R.drawable.ic_edge_lock,
+                this::showPrivacyDialog));
+        menuItems.add(new MenuItem("性能", R.drawable.ic_arrow_forward,
+                () -> startActivity(new Intent(this, PerformanceActivity.class))));
+        menuItems.add(new MenuItem("任务", R.drawable.ic_more_vertical,
+                () -> startActivity(new Intent(this, TaskManagerActivity.class))));
+        menuItems.add(new MenuItem("设置", R.drawable.ic_edge_home,
+                () -> startActivity(new Intent(this, SettingsActivity.class))));
+        menuItems.add(new MenuItem("日志", R.drawable.ic_edge_search,
+                this::showLogViewer));
+        menuItems.add(new MenuItem("分享", R.drawable.ic_edge_share, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                String url = wv.getUrl();
+                if (url != null) {
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/plain");
+                    share.putExtra(Intent.EXTRA_TEXT, url);
+                    startActivity(Intent.createChooser(share, "分享"));
+                }
+            }
+        }));
+        menuItems.add(new MenuItem("桌面版", R.drawable.ic_edge_search, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null && wv.isWebViewBased()) {
+                EdgeWebView ewv = (EdgeWebView) wv;
+                ewv.getSettings().setUserAgentString(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+                ewv.reload();
+                Toast.makeText(this, "已切换到桌面版", Toast.LENGTH_SHORT).show();
+            }
+        }));
+        menuItems.add(new MenuItem("分屏", R.drawable.ic_pip, () -> {
+            Toast.makeText(this, "分屏功能开发中", Toast.LENGTH_SHORT).show();
+        }));
+
+        MenuGridAdapter adapter = new MenuGridAdapter(menuItems);
+        menuGrid.setAdapter(adapter);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(sheetView)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        dialog.show();
     }
 
     // === Feature Methods ===
@@ -431,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         if (url != null && !url.isEmpty()) {
             BrowserLogger.getInstance().i(TAG, BrowserLogger.LogCategory.BROWSER,
                     "添加书签: " + title + " - " + url);
-            Toast.makeText(this, "已添加书签: " + (title != null ? title : url), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "已添加书签", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -442,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                         (d, which) -> {
                             switch (which) {
                                 case 0: privacyManager.clearBrowsingData(true, true, true);
-                                    Toast.makeText(this, "浏览数据已清除", Toast.LENGTH_SHORT).show(); break;
+                                    Toast.makeText(this, "已清除", Toast.LENGTH_SHORT).show(); break;
                                 case 1: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BASIC); break;
                                 case 2: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BALANCED); break;
                                 case 3: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.STRICT); break;
@@ -466,12 +683,12 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("日志查看")
                 .setMessage(info.toString())
-                .setPositiveButton("导出日志", (d, which) -> {
+                .setPositiveButton("导出", (d, which) -> {
                     File file = BrowserLogger.getInstance().exportLogs();
                     String path = file != null ? file.getAbsolutePath() : "导出失败";
-                    Toast.makeText(this, "日志已导出到: " + path, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "日志已导出: " + path, Toast.LENGTH_LONG).show();
                 })
-                .setNegativeButton("清除日志", (d, which) -> {
+                .setNegativeButton("清除", (d, which) -> {
                     BrowserLogger.getInstance().clearLogs();
                     Toast.makeText(this, "日志已清除", Toast.LENGTH_SHORT).show();
                 })
@@ -527,6 +744,65 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             wv.goBack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    // === Menu Grid Adapter ===
+
+    private static class MenuItem {
+        String label;
+        int iconRes;
+        Runnable action;
+
+        MenuItem(String label, int iconRes, Runnable action) {
+            this.label = label;
+            this.iconRes = iconRes;
+            this.action = action;
+        }
+    }
+
+    private class MenuGridAdapter extends RecyclerView.Adapter<MenuGridAdapter.ViewHolder> {
+
+        private final List<MenuItem> items;
+
+        MenuGridAdapter(List<MenuItem> items) {
+            this.items = items;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_menu_grid, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            MenuItem item = items.get(position);
+            holder.icon.setImageResource(item.iconRes);
+            holder.label.setText(item.label);
+            holder.itemView.setOnClickListener(v -> {
+                if (item != null && item.action != null) {
+                    item.action.run();
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            ImageView icon;
+            TextView label;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                icon = itemView.findViewById(R.id.menu_item_icon);
+                label = itemView.findViewById(R.id.menu_item_label);
+            }
         }
     }
 }
