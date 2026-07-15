@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.EdgeBrowser" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:navigationBarColor">@color/surface_light</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MaterialComponents.BottomSheetDialog</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/toolbar_bg</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="Theme.EdgeBrowser.InPrivate" parent="Theme.EdgeBrowser">
+        <item name="colorPrimary">@color/incognito_accent</item>
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowBackground">@color/incognito_bg</item>
+    </style>
+
+    <style name="UrlBarStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">20dp</item>
+        <item name="boxCornerRadiusBottomStart">20dp</item>
+        <item name="boxCornerRadiusTopEnd">20dp</item>
+        <item name="boxCornerRadiusTopStart">20dp</item>
+        <item name="boxBackgroundColor">@color/url_bar_bg</item>
+        <item name="boxStrokeColor">@android:color/transparent</item>
+    </style>
+</resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Microsoft Edge</string>
+    <string name="settings">设置</string>
+    <string name="downloads">下载管理</string>
+    <string name="bookmarks">收藏夹</string>
+    <string name="history">历史记录</string>
+    <string name="collections">集锦</string>
+    <string name="task_manager">任务管理器</string>
+    <string name="performance_center">性能中心</string>
+    <string name="new_tab">新标签页</string>
+    <string name="search_or_url">搜索或输入网址</string>
+    <string name="menu_back">后退</string>
+    <string name="menu_forward">前进</string>
+    <string name="menu_refresh">刷新</string>
+    <string name="menu_new_tab">新建标签页</string>
+    <string name="menu_new_incognito">新建InPrivate标签页</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_find_in_page">在页面中查找</string>
+    <string name="menu_desktop_site">桌面版网站</string>
+    <string name="menu_translate">翻译</string>
+    <string name="menu_add_to_collections">添加到集锦</string>
+    <string name="menu_read_aloud">大声朗读</string>
+    <string name="menu_reader_mode">沉浸式阅读器</string>
+    <string name="menu_screenshot">截图</string>
+
+    <!-- Settings strings -->
+    <string name="settings_general">常规</string>
+    <string name="settings_privacy">隐私与安全</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_downloads">下载</string>
+    <string name="settings_advanced">高级</string>
+    <string name="startup_boost">启动增强</string>
+    <string name="startup_boost_desc">后台预加载浏览器核心进程，提升冷启动速度</string>
+    <string name="sleeping_tabs">睡眠标签页</string>
+    <string name="sleeping_tabs_desc">自动休眠长时间未查看的标签，释放内存和CPU资源</string>
+    <string name="sleep_timeout">休眠超时</string>
+    <string name="sleep_timeout_desc">标签闲置后自动休眠的等待时间</string>
+    <string name="efficiency_mode">效率模式</string>
+    <string name="efficiency_mode_desc">限制后台脚本，降低功耗，延长电池续航</string>
+    <string name="tracking_protection">跟踪防护</string>
+    <string name="tracking_protection_desc">选择跟踪防护级别</string>
+    <string name="https_only">HTTPS强制模式</string>
+    <string name="https_only_desc">自动将HTTP网站升级为HTTPS</string>
+    <string name="do_not_track">发送"请勿跟踪"请求</string>
+    <string name="block_popups">阻止弹窗</string>
+    <string name="block_ads">阻止广告</string>
+    <string name="auto_clear_cookies">退出时清除Cookie</string>
+    <string name="theme_mode">主题模式</string>
+    <string name="parallel_download">并行多线程下载</string>
+    <string name="parallel_download_desc">拆分文件多通道下载，大文件提速50%-100%</string>
+    <string name="hardware_acceleration">硬件加速</string>
+    <string name="hardware_acceleration_desc">启用GPU硬件加速解码</string>
+    <string name="other_store_extensions">允许来自其他商店的扩展</string>
+    <string name="experimental_features">实验性功能</string>
+    <string name="clear_browsing_data">清除浏览数据</string>
+    <string name="passwords">密码管理器</string>
+    <string name="site_permissions">网站权限</string>
+    <string name="new_tab_layout">新标签页布局</string>
+</resources>

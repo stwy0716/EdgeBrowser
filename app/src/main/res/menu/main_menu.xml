@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_new_tab" android:title="新建标签页" />
+    <item android:id="@+id/action_new_incognito_tab" android:title="新建InPrivate标签页" />
+    <group android:id="@+id/group_tab">
+        <item android:id="@+id/action_split_screen" android:title="分屏浏览" />
+        <item android:id="@+id/action_collections" android:title="集锦" />
+        <item android:id="@+id/action_bookmarks" android:title="收藏夹" />
+        <item android:id="@+id/action_history" android:title="历史记录" />
+        <item android:id="@+id/action_downloads" android:title="下载管理" />
+    </group>
+    <group android:id="@+id/group_tools">
+        <item android:id="@+id/action_reader_mode" android:title="沉浸式阅读器" />
+        <item android:id="@+id/action_read_aloud" android:title="大声朗读" />
+        <item android:id="@+id/action_translate" android:title="翻译" />
+        <item android:id="@+id/action_screenshot" android:title="截图" />
+        <item android:id="@+id/action_find_in_page" android:title="在页面中查找" />
+        <item android:id="@+id/action_desktop_site" android:title="桌面版网站" />
+    </group>
+    <group android:id="@+id/group_save">
+        <item android:id="@+id/action_save_as_pdf" android:title="保存为PDF" />
+        <item android:id="@+id/action_print" android:title="打印" />
+        <item android:id="@+id/action_share" android:title="分享" />
+        <item android:id="@+id/action_add_to_collections" android:title="添加到集锦" />
+    </group>
+    <group android:id="@+id/group_performance">
+        <item android:id="@+id/action_task_manager" android:title="任务管理器" />
+        <item android:id="@+id/action_performance" android:title="性能中心" />
+    </group>
+    <group android:id="@+id/group_other">
+        <item android:id="@+id/action_settings" android:title="设置" />
+    </group>
+</menu>

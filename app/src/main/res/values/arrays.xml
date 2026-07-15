@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sleep timeout -->
+    <string-array name="sleep_timeout_entries">
+        <item>30秒</item>
+        <item>1分钟</item>
+        <item>2分钟</item>
+        <item>5分钟</item>
+        <item>10分钟</item>
+        <item>30分钟</item>
+    </string-array>
+    <string-array name="sleep_timeout_values">
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1800</item>
+    </string-array>
+
+    <!-- Tracking protection -->
+    <string-array name="tracking_entries">
+        <item>基本 - 仅拦截恶意追踪</item>
+        <item>平衡 - 拦截跨站广告跟踪（推荐）</item>
+        <item>严格 - 强力拦截所有第三方Cookie</item>
+    </string-array>
+    <string-array name="tracking_values">
+        <item>BASIC</item>
+        <item>BALANCED</item>
+        <item>STRICT</item>
+    </string-array>
+
+    <!-- Theme -->
+    <string-array name="theme_entries">
+        <item>亮色</item>
+        <item>深色</item>
+        <item>跟随系统</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>LIGHT</item>
+        <item>DARK</item>
+        <item>SYSTEM</item>
+    </string-array>
+
+    <!-- New Tab Layout -->
+    <string-array name="new_tab_layout_entries">
+        <item>专注模式（空白极简）</item>
+        <item>灵感模式（壁纸+资讯）</item>
+        <item>资讯模式</item>
+    </string-array>
+    <string-array name="new_tab_layout_values">
+        <item>FOCUSED</item>
+        <item>INSPIRATIONAL</item>
+        <item>INFORMATIONAL</item>
+    </string-array>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="downloads" path="Download/EdgeBrowser/" />
+    <external-path name="images" path="Download/EdgeBrowser/Images/" />
+    <external-path name="documents" path="Download/EdgeBrowser/Documents/" />
+    <external-path name="packages" path="Download/EdgeBrowser/Packages/" />
+    <cache-path name="cache" path="/" />
+</paths>

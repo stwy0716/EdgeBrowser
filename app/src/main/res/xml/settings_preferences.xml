@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- General -->
+    <PreferenceCategory android:title="常规">
+        <SwitchPreferenceCompat
+            android:key="startup_boost"
+            android:title="启动增强"
+            android:summary="后台预加载浏览器核心进程，提升冷启动速度"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="sleeping_tabs"
+            android:title="睡眠标签页"
+            android:summary="自动休眠长时间未查看的标签，释放内存和CPU"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="sleep_timeout"
+            android:title="休眠超时时间"
+            android:summary="标签闲置后自动休眠的等待时间"
+            android:entries="@array/sleep_timeout_entries"
+            android:entryValues="@array/sleep_timeout_values"
+            android:defaultValue="60" />
+
+        <SwitchPreferenceCompat
+            android:key="efficiency_mode"
+            android:title="效率模式"
+            android:summary="限制后台脚本，降低功耗，延长电池续航约25分钟"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="hardware_acceleration"
+            android:title="硬件加速解码"
+            android:summary="启用GPU硬解4K/8K视频、HDR流媒体"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <!-- Privacy & Security -->
+    <PreferenceCategory android:title="隐私与安全">
+
+        <ListPreference
+            android:key="tracking_protection"
+            android:title="跟踪防护"
+            android:summary="选择跟踪防护级别"
+            android:entries="@array/tracking_entries"
+            android:entryValues="@array/tracking_values"
+            android:defaultValue="BALANCED" />
+
+        <SwitchPreferenceCompat
+            android:key="https_only"
+            android:title="HTTPS强制模式"
+            android:summary="自动将HTTP网站升级为加密HTTPS"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="do_not_track"
+            android:title="发送「请勿跟踪」请求"
+            android:summary="向所有网站发送禁止追踪声明"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="block_popups"
+            android:title="阻止弹窗"
+            android:summary="阻止自动弹出广告和诱导下载弹窗"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="block_ads"
+            android:title="阻止广告"
+            android:summary="屏蔽网页内嵌广告脚本"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="auto_clear_cookies"
+            android:title="退出时清除Cookie"
+            android:summary="退出浏览器时自动清空所有Cookie"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="passwords"
+            android:title="密码管理器"
+            android:summary="管理保存的密码、监控泄露密码" />
+
+        <Preference
+            android:key="site_permissions"
+            android:title="网站权限"
+            android:summary="管理每个网站的摄像头、麦克风、定位等权限" />
+
+        <Preference
+            android:key="clear_browsing_data"
+            android:title="清除浏览数据"
+            android:summary="清除Cookie、缓存、历史记录等" />
+    </PreferenceCategory>
+
+    <!-- Appearance -->
+    <PreferenceCategory android:title="外观">
+
+        <ListPreference
+            android:key="theme_mode"
+            android:title="主题模式"
+            android:summary="选择亮色、深色或跟随系统主题"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="SYSTEM" />
+
+        <ListPreference
+            android:key="new_tab_layout"
+            android:title="新标签页布局"
+            android:summary="选择新标签页的显示模式"
+            android:entries="@array/new_tab_layout_entries"
+            android:entryValues="@array/new_tab_layout_values"
+            android:defaultValue="FOCUSED" />
+    </PreferenceCategory>
+
+    <!-- Downloads -->
+    <PreferenceCategory android:title="下载">
+
+        <SwitchPreferenceCompat
+            android:key="parallel_download"
+            android:title="并行多线程下载"
+            android:summary="拆分文件多通道下载，大文件提速50%-100%"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <!-- Extensions -->
+    <PreferenceCategory android:title="扩展">
+
+        <SwitchPreferenceCompat
+            android:key="other_store_extensions"
+            android:title="允许来自其他商店的扩展"
+            android:summary="启用后可安装Chrome网上应用店的扩展"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <!-- Advanced -->
+    <PreferenceCategory android:title="高级">
+
+        <Preference
+            android:key="experimental_features"
+            android:title="实验性功能"
+            android:summary="平滑滚动、标签预览、下载加速等实验性功能开关" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
