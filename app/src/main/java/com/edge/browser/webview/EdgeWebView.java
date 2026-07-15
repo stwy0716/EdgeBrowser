@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import com.edge.browser.BrowserLogger;
 import com.edge.browser.BrowserLogger.LogCategory;
 import com.edge.browser.adblock.AdBlocker;
+import com.edge.browser.nightmode.NightModeManager;
+import com.edge.browser.video.VideoDownloader;
 
 public class EdgeWebView extends WebView implements IBrowserView {
 
@@ -271,5 +273,53 @@ public class EdgeWebView extends WebView implements IBrowserView {
     @Override
     public void clearMatches() {
         super.clearMatches();
+    }
+
+    // === 夜间模式 ===
+
+    @Override
+    public void enableNightMode() {
+        String darkJS = NightModeManager.getInstance().getDarkJS();
+        if (darkJS != null) {
+            evaluateJavascript(darkJS, null);
+        }
+    }
+
+    @Override
+    public void disableNightMode() {
+        evaluateJavascript(
+            "(function(){" +
+            "var s=document.getElementById('edge-night-mode-style');" +
+            "if(s)s.remove();" +
+            "})()",
+            null
+        );
+    }
+
+    // === JS/CSS 注入 ===
+
+    @Override
+    public void injectJavaScript(String js) {
+        evaluateJavascript(js, null);
+    }
+
+    @Override
+    public void injectCSS(String css) {
+        String escapedCss = css.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "");
+        evaluateJavascript(
+            "(function(){" +
+            "var s=document.createElement('style');" +
+            "s.textContent='" + escapedCss + "';" +
+            "document.head.appendChild(s);" +
+            "})()",
+            null
+        );
+    }
+
+    // === 视频检测 ===
+
+    @Override
+    public void detectVideos() {
+        VideoDownloader.getInstance().detectVideos(this);
     }
 }

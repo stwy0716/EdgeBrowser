@@ -184,6 +184,33 @@ public class GeckoWebView extends FrameLayout implements IBrowserView {
     @Override public void findNext(boolean forward) {}
     @Override public void findAllAsync(String query) {}
     @Override public void clearMatches() {}
+
+    // === 夜间模式 ===
+
+    @Override public void enableNightMode() {
+        // Gecko 引擎暂不支持夜间模式
+    }
+
+    @Override public void disableNightMode() {
+        // Gecko 引擎暂不支持夜间模式
+    }
+
+    // === JS/CSS 注入 ===
+
+    @Override public void injectJavaScript(String js) {
+        // Gecko 引擎暂不支持 JS 注入
+    }
+
+    @Override public void injectCSS(String css) {
+        // Gecko 引擎暂不支持 CSS 注入
+    }
+
+    // === 视频检测 ===
+
+    @Override public void detectVideos() {
+        // Gecko 引擎暂不支持视频检测
+    }
+
     @Override public Bitmap captureBitmap() {
         if (geckoView == null) return null;
         int w = geckoView.getWidth();

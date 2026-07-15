@@ -201,6 +201,206 @@
 
         </LinearLayout>
 
+        <!-- 启动页 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="启动时"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:elevation="1dp"
+            android:layout_marginBottom="16dp">
+
+            <RadioGroup
+                android:id="@+id/startup_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
+            <EditText
+                android:id="@+id/homepage_url"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="输入主页网址"
+                android:inputType="textUri"
+                android:paddingHorizontal="16dp"
+                android:visibility="gone"
+                android:textColor="#212121"
+                android:textColorHint="#9E9E9E"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- 功能设置 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="功能设置"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:elevation="1dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="夜间模式"
+                        android:textColor="#212121"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="为网页应用深色主题"
+                        android:textColor="#9E9E9E"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/night_mode_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- 数据管理 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="数据管理"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:elevation="1dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/btn_stats"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="查看统计"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginHorizontal="16dp" />
+
+            <TextView
+                android:id="@+id/btn_passwords"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="管理密码"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginHorizontal="16dp" />
+
+            <TextView
+                android:id="@+id/btn_reading_list"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="管理阅读列表"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginHorizontal="16dp" />
+
+            <TextView
+                android:id="@+id/btn_extensions"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="管理扩展"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginHorizontal="16dp" />
+
+            <TextView
+                android:id="@+id/btn_quick_links"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="16dp"
+                android:text="管理快捷链接"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground" />
+
+        </LinearLayout>
+
         <!-- 关于 -->
         <TextView
             android:layout_width="match_parent"

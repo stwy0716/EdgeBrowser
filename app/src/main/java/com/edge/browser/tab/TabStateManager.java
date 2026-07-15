@@ -26,7 +26,7 @@ public class TabStateManager {
         db.clearTabStates();
         for (int i = 0; i < tabs.size(); i++) {
             TabItem t = tabs.get(i);
-            db.saveTabState(i, t.getTitle(), t.getUrl(), t.isPinned());
+            db.saveTabState(i, t.getTitle(), t.getUrl(), t.isPinned(), t.isIncognito());
         }
     }
 

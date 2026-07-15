@@ -44,6 +44,17 @@ public interface IBrowserView {
     // === 引擎类型 ===
     String getEngineType();
 
+    // === 夜间模式 ===
+    void enableNightMode();
+    void disableNightMode();
+
+    // === JS/CSS 注入 ===
+    void injectJavaScript(String js);
+    void injectCSS(String css);
+
+    // === 视频检测 ===
+    void detectVideos();
+
     // === WebView 专有方法 (仅 Chromium 引擎支持) ===
     boolean isWebViewBased();
     android.webkit.WebView getWebView(); // 可能为 null (Gecko 引擎)

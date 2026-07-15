@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
@@ -16,9 +18,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.ValueCallback;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,17 +41,28 @@ import com.edge.browser.bookmark.BookmarkManager;
 import com.edge.browser.data.DatabaseHelper;
 import com.edge.browser.download.DownloadManager;
 import com.edge.browser.engine.EnginePreferences;
+import com.edge.browser.extensions.ExtensionInfo;
+import com.edge.browser.extensions.ExtensionManager;
+import com.edge.browser.gesture.GestureController;
 import com.edge.browser.history.HistoryManager;
 import com.edge.browser.media.MediaController;
 import com.edge.browser.media.PictureInPictureManager;
+import com.edge.browser.nightmode.NightModeManager;
+import com.edge.browser.notification.WebNotificationManager;
+import com.edge.browser.password.PasswordManager;
 import com.edge.browser.performance.PerformanceManager;
 import com.edge.browser.performance.TaskManager;
 import com.edge.browser.privacy.PrivacyManager;
+import com.edge.browser.quicklinks.QuickLinkManager;
 import com.edge.browser.reader.ReadAloudManager;
 import com.edge.browser.reader.ReaderModeManager;
+import com.edge.browser.reading.ReadingListManager;
 import com.edge.browser.screenshot.ScreenshotManager;
 import com.edge.browser.search.SearchEngineManager;
 import com.edge.browser.sidebar.SidebarManager;
+import com.edge.browser.sites.PerSiteSettingsManager;
+import com.edge.browser.startup.StartupConfigManager;
+import com.edge.browser.stats.StatsManager;
 import com.edge.browser.tab.SleepingTabManager;
 import com.edge.browser.tab.TabGroupManager;
 import com.edge.browser.tab.TabItem;
@@ -59,6 +74,7 @@ import com.edge.browser.translate.TranslationManager;
 import com.edge.browser.ui.NewTabPage;
 import com.edge.browser.ui.TabListAdapter;
 import com.edge.browser.ui.TabPagerAdapter;
+import com.edge.browser.video.VideoDownloader;
 import com.edge.browser.webview.ChromiumWebViewFactory;
 import com.edge.browser.webview.EdgeWebView;
 import com.edge.browser.webview.GeckoRuntimeManager;
@@ -119,6 +135,18 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private AdBlocker adBlocker;
     private TranslationManager translationManager;
 
+    private NightModeManager nightModeManager;
+    private VideoDownloader videoDownloader;
+    private ExtensionManager extensionManager;
+    private GestureController gestureController;
+    private PerSiteSettingsManager perSiteSettingsManager;
+    private ReadingListManager readingListManager;
+    private StatsManager statsManager;
+    private PasswordManager passwordManager;
+    private QuickLinkManager quickLinkManager;
+    private StartupConfigManager startupConfigManager;
+    private WebNotificationManager webNotificationManager;
+
     // Adapters
     private TabPagerAdapter pagerAdapter;
     private TabListAdapter tabListAdapter;
@@ -146,6 +174,10 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             setupListeners();
             setupAddressBarSwipe();
             restoreTabState();
+            String startupMode = startupConfigManager.getStartupMode();
+            if ("homepage".equals(startupMode) && tabManager.getTabCount() == 0) {
+                navigateTo(startupConfigManager.getHomepage());
+            }
             handleIntent(getIntent());
             checkGoogleWebView();
             updateTabCount();
@@ -187,6 +219,21 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             translationManager = TranslationManager.getInstance();
             sleepingTabManager.start();
             privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BALANCED);
+
+            nightModeManager = NightModeManager.getInstance();
+            nightModeManager.loadState(db);
+            videoDownloader = VideoDownloader.getInstance();
+            extensionManager = ExtensionManager.getInstance(this);
+            extensionManager.preloadBuiltinExtensions();
+            gestureController = new GestureController();
+            perSiteSettingsManager = PerSiteSettingsManager.getInstance(this);
+            readingListManager = ReadingListManager.getInstance(this);
+            statsManager = StatsManager.getInstance(this);
+            passwordManager = PasswordManager.getInstance(this);
+            quickLinkManager = QuickLinkManager.getInstance(this);
+            startupConfigManager = StartupConfigManager.getInstance(this);
+            webNotificationManager = WebNotificationManager.getInstance();
+            webNotificationManager.init(this);
         } catch (Exception e) {
             BrowserLogger.getInstance().logCrash("initManagers", e);
         }
@@ -443,6 +490,30 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         });
 
         btnMenu.setOnClickListener(v -> showEdgeMenu());
+
+        gestureController.attach(findViewById(R.id.bottom_bar), new GestureController.GestureCallback() {
+            @Override public void onBackGesture() {
+                IBrowserView wv = getCurrentWebView();
+                if (wv != null && wv.canGoBack()) wv.goBack();
+            }
+            @Override public void onForwardGesture() {
+                IBrowserView wv = getCurrentWebView();
+                if (wv != null && wv.canGoForward()) wv.goForward();
+            }
+            @Override public void onShowTabsGesture() {
+                if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.END);
+            }
+            @Override public void onRefreshGesture() {
+                IBrowserView wv = getCurrentWebView();
+                if (wv != null) wv.reload();
+            }
+            @Override public void onScrollToTopGesture() {
+                IBrowserView wv = getCurrentWebView();
+                if (wv != null && wv.isWebViewBased()) {
+                    ((EdgeWebView) wv).scrollTo(0, 0);
+                }
+            }
+        });
     }
 
     // === URL 输入 ===
@@ -484,6 +555,10 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     public View getNewTabPage() {
         if (newTabPage == null) {
             newTabPage = new NewTabPage(this);
+            List<DatabaseHelper.QuickLinkEntry> links = quickLinkManager.getLinks();
+            if (links == null || links.isEmpty()) {
+                quickLinkManager.saveLinks(NewTabPage.getDefaultQuickLinks());
+            }
             newTabPage.setCallback(new NewTabPage.NewTabCallback() {
                 @Override public void onSearch(String query) {
                     navigateTo(query);
@@ -524,6 +599,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                         updateLockIcon(url);
                         // 记录历史
                         historyManager.addVisit(title, url);
+                        statsManager.recordPageVisit();
                     });
                 }
                 @Override public void onProgressChanged(int progress) {
@@ -771,6 +847,77 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         menuItems.add(new MenuItem("设置", R.drawable.ic_edge_home,
                 () -> startActivity(new Intent(this, SettingsActivity.class))));
         menuItems.add(new MenuItem("日志", R.drawable.ic_edge_search, this::showLogViewer));
+        menuItems.add(new MenuItem("夜间模式", R.drawable.ic_edge_lock, () -> {
+            nightModeManager.setEnabled(!nightModeManager.isEnabled());
+            nightModeManager.saveState(DatabaseHelper.getInstance(this));
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                if (nightModeManager.isEnabled()) {
+                    wv.injectCSS(nightModeManager.getDarkCSS());
+                    wv.injectJavaScript(nightModeManager.getDarkJS());
+                } else {
+                    wv.disableNightMode();
+                }
+            }
+            Toast.makeText(this, nightModeManager.isEnabled() ? "夜间模式已开启" : "夜间模式已关闭", Toast.LENGTH_SHORT).show();
+        }));
+        menuItems.add(new MenuItem("视频下载", R.drawable.ic_download, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null && wv.isWebViewBased()) {
+                wv.detectVideos();
+                List<String> urls = videoDownloader.getVideoUrls();
+                if (urls != null && !urls.isEmpty()) {
+                    new AlertDialog.Builder(this)
+                        .setTitle("检测到 " + urls.size() + " 个视频")
+                        .setItems(urls.toArray(new String[0]), (d, i) -> {
+                            String url = urls.get(i);
+                            String filename = "video_" + System.currentTimeMillis() + ".mp4";
+                            videoDownloader.downloadVideo(this, url, filename);
+                            Toast.makeText(this, "开始下载视频", Toast.LENGTH_SHORT).show();
+                        }).show();
+                } else {
+                    Toast.makeText(this, "未检测到视频", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "视频下载仅支持 Chromium 引擎", Toast.LENGTH_SHORT).show();
+            }
+        }));
+        menuItems.add(new MenuItem("阅读列表", R.drawable.ic_reader_mode, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                readingListManager.addItem(wv.getTitle(), wv.getUrl(), null);
+                Toast.makeText(this, "已添加到阅读列表", Toast.LENGTH_SHORT).show();
+            }
+        }));
+        menuItems.add(new MenuItem("保存密码", R.drawable.ic_edge_lock, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                showPasswordSaveDialog(wv.getUrl());
+            }
+        }));
+        menuItems.add(new MenuItem("扩展", R.drawable.ic_edge_search, () -> {
+            List<ExtensionInfo> exts = extensionManager.getExtensions();
+            String[] names = new String[exts.size()];
+            boolean[] checked = new boolean[exts.size()];
+            for (int i = 0; i < exts.size(); i++) {
+                names[i] = exts.get(i).name + (exts.get(i).enabled ? " (已启用)" : "");
+                checked[i] = exts.get(i).enabled;
+            }
+            new AlertDialog.Builder(this)
+                .setTitle("扩展管理")
+                .setMultiChoiceItems(names, checked, (d, i, isChecked) -> {
+                    extensionManager.setEnabled(exts.get(i).id, isChecked);
+                })
+                .setPositiveButton("确定", null)
+                .show();
+        }));
+        menuItems.add(new MenuItem("同步", R.drawable.ic_edge_share, () -> {
+            new AlertDialog.Builder(this)
+                .setTitle("多设备同步")
+                .setMessage("同步功能需要登录 Microsoft 账户。\n\n功能开发中，敬请期待...")
+                .setPositiveButton("确定", null)
+                .show();
+        }));
         menuItems.add(new MenuItem("桌面版", R.drawable.ic_edge_search, () -> {
             IBrowserView wv = getCurrentWebView();
             if (wv != null && wv.isWebViewBased()) {
@@ -888,6 +1035,35 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         dialog.show();
     }
 
+    private void showPasswordSaveDialog(String domain) {
+        EditText userInput = new EditText(this);
+        userInput.setHint("用户名");
+        userInput.setPadding(32, 24, 32, 24);
+        EditText passInput = new EditText(this);
+        passInput.setHint("密码");
+        passInput.setPadding(32, 24, 32, 24);
+        passInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(userInput);
+        layout.addView(passInput);
+
+        new AlertDialog.Builder(this)
+            .setTitle("保存密码 - " + Uri.parse(domain).getHost())
+            .setView(layout)
+            .setPositiveButton("保存", (d, w) -> {
+                String user = userInput.getText().toString().trim();
+                String pass = passInput.getText().toString().trim();
+                if (!user.isEmpty() && !pass.isEmpty()) {
+                    passwordManager.savePassword(Uri.parse(domain).getHost(), user, pass);
+                    Toast.makeText(this, "密码已保存", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNegativeButton("取消", null)
+            .show();
+    }
+
     private void checkGoogleWebView() {
         ChromiumWebViewFactory factory = ChromiumWebViewFactory.getInstance();
         if (factory.shouldPromptInstallGoogleWebView()) {
@@ -917,6 +1093,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
 
     @Override
     protected void onDestroy() {
+        if (gestureController != null) gestureController.detach();
         super.onDestroy();
         for (IBrowserView wv : webViewCache.values()) {
             try { wv.destroy(); } catch (Exception ignored) {}

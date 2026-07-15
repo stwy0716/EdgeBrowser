@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.edge.browser.R;
+import com.edge.browser.data.DatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class NewTabPage {
     private final QuickLinkAdapter quickLinkAdapter;
     private final NewsAdapter newsAdapter;
     private NewTabCallback callback;
+    private List<DatabaseHelper.QuickLinkEntry> externalQuickLinks;
 
     public interface NewTabCallback {
         void onSearch(String query);
@@ -84,16 +86,49 @@ public class NewTabPage {
         this.callback = callback;
     }
 
+    public static List<DatabaseHelper.QuickLinkEntry> getDefaultQuickLinks() {
+        List<DatabaseHelper.QuickLinkEntry> links = new ArrayList<>();
+        links.add(createEntry("百度", "https://www.baidu.com", 0));
+        links.add(createEntry("淘宝", "https://www.taobao.com", 1));
+        links.add(createEntry("京东", "https://www.jd.com", 2));
+        links.add(createEntry("微博", "https://weibo.com", 3));
+        links.add(createEntry("知乎", "https://www.zhihu.com", 4));
+        links.add(createEntry("B站", "https://www.bilibili.com", 5));
+        links.add(createEntry("抖音", "https://www.douyin.com", 6));
+        links.add(createEntry("GitHub", "https://github.com", 7));
+        return links;
+    }
+
+    private static DatabaseHelper.QuickLinkEntry createEntry(String title, String url, int position) {
+        DatabaseHelper.QuickLinkEntry entry = new DatabaseHelper.QuickLinkEntry();
+        entry.title = title;
+        entry.url = url;
+        entry.position = position;
+        return entry;
+    }
+
+    public void setQuickLinks(List<DatabaseHelper.QuickLinkEntry> links) {
+        if (links == null) return;
+        this.externalQuickLinks = links;
+        List<QuickLink> quickLinks = new ArrayList<>();
+        for (DatabaseHelper.QuickLinkEntry entry : links) {
+            quickLinks.add(new QuickLink(entry.title, entry.url, R.drawable.ic_edge_search));
+        }
+        quickLinkAdapter.setItems(quickLinks);
+    }
+
     private List<QuickLink> createQuickLinks() {
+        if (externalQuickLinks != null && !externalQuickLinks.isEmpty()) {
+            return createQuickLinks(externalQuickLinks);
+        }
+        return createQuickLinks(getDefaultQuickLinks());
+    }
+
+    private List<QuickLink> createQuickLinks(List<DatabaseHelper.QuickLinkEntry> entries) {
         List<QuickLink> links = new ArrayList<>();
-        links.add(new QuickLink("百度", "https://www.baidu.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("淘宝", "https://www.taobao.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("京东", "https://www.jd.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("微博", "https://weibo.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("知乎", "https://www.zhihu.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("B站", "https://www.bilibili.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("抖音", "https://www.douyin.com", R.drawable.ic_edge_search));
-        links.add(new QuickLink("GitHub", "https://github.com", R.drawable.ic_edge_search));
+        for (DatabaseHelper.QuickLinkEntry entry : entries) {
+            links.add(new QuickLink(entry.title, entry.url, R.drawable.ic_edge_search));
+        }
         return links;
     }
 
@@ -141,7 +176,13 @@ public class NewTabPage {
         private final List<QuickLink> items;
 
         QuickLinkAdapter(List<QuickLink> items) {
-            this.items = items;
+            this.items = new ArrayList<>(items);
+        }
+
+        void setItems(List<QuickLink> newItems) {
+            this.items.clear();
+            this.items.addAll(newItems);
+            notifyDataSetChanged();
         }
 
         @NonNull
