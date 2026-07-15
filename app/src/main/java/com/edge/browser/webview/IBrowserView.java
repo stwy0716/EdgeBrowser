@@ -52,6 +52,8 @@ public interface IBrowserView {
     void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl);
     android.webkit.WebSettings getSettings();
     void findNext(boolean forward);
+    void findAllAsync(String query);
+    void clearMatches();
     Bitmap captureBitmap();
     float getScale();
     int getContentHeight();

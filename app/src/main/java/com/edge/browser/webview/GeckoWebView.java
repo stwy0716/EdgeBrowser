@@ -182,6 +182,8 @@ public class GeckoWebView extends FrameLayout implements IBrowserView {
     }
     @Override public WebSettings getSettings() { return null; }
     @Override public void findNext(boolean forward) {}
+    @Override public void findAllAsync(String query) {}
+    @Override public void clearMatches() {}
     @Override public Bitmap captureBitmap() {
         if (geckoView == null) return null;
         int w = geckoView.getWidth();

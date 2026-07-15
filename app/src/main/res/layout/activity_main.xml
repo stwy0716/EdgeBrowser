@@ -39,6 +39,12 @@
 
         </FrameLayout>
 
+        <!-- 页面内查找栏 -->
+        <include
+            android:id="@+id/find_bar"
+            layout="@layout/find_in_page_bar"
+            android:visibility="gone" />
+
         <!-- Edge 底部栏 -->
         <LinearLayout
             android:id="@+id/bottom_bar"

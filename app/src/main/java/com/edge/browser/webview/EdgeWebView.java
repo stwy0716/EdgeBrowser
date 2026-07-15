@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.edge.browser.BrowserLogger;
 import com.edge.browser.BrowserLogger.LogCategory;
+import com.edge.browser.adblock.AdBlocker;
 
 public class EdgeWebView extends WebView implements IBrowserView {
 
@@ -174,6 +175,16 @@ public class EdgeWebView extends WebView implements IBrowserView {
                         "HTTP错误: " + request.getUrl() + " - " + errorResponse.getStatusCode());
             }
         }
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            String url = request.getUrl().toString();
+            if (AdBlocker.getInstance().shouldBlock(url)) {
+                BrowserLogger.getInstance().d(TAG, LogCategory.PRIVACY, "广告拦截: " + url);
+                return new WebResourceResponse("text/plain", "utf-8", null);
+            }
+            return super.shouldInterceptRequest(view, request);
+        }
     }
 
     private class EdgeWebChromeClient extends WebChromeClient {
@@ -247,4 +258,18 @@ public class EdgeWebView extends WebView implements IBrowserView {
 
     @Override
     public boolean isLoading() { return getProgress() < 100; }
+
+    @Override
+    public void findAllAsync(String query) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            super.findAllAsync(query);
+        } else {
+            super.findAll(query);
+        }
+    }
+
+    @Override
+    public void clearMatches() {
+        super.clearMatches();
+    }
 }
