@@ -1,39 +1,20 @@
 package com.edge.browser;
 
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
-import android.print.PrintManager;
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.*;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,26 +22,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.edge.browser.download.DownloadManager;
-import com.edge.browser.download.DownloadService;
 import com.edge.browser.media.MediaController;
 import com.edge.browser.media.PictureInPictureManager;
 import com.edge.browser.performance.PerformanceManager;
 import com.edge.browser.performance.TaskManager;
 import com.edge.browser.privacy.PrivacyManager;
-import com.edge.browser.reader.ReaderModeManager;
 import com.edge.browser.reader.ReadAloudManager;
+import com.edge.browser.reader.ReaderModeManager;
 import com.edge.browser.screenshot.ScreenshotManager;
 import com.edge.browser.sidebar.SidebarManager;
-import com.edge.browser.tab.*;
+import com.edge.browser.tab.SleepingTabManager;
+import com.edge.browser.tab.TabGroupManager;
+import com.edge.browser.tab.TabItem;
+import com.edge.browser.tab.TabManager;
 import com.edge.browser.theme.ThemeManager;
 import com.edge.browser.tools.SideToolsManager;
-import com.edge.browser.ui.*;
+import com.edge.browser.ui.TabListAdapter;
+import com.edge.browser.ui.TabPagerAdapter;
+import com.edge.browser.webview.ChromiumWebViewFactory;
 import com.edge.browser.webview.EdgeWebView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.android.material.textfield.TextInputEditText;
+import com.edge.browser.webview.GeckoRuntimeManager;
+import com.edge.browser.webview.GeckoWebView;
+import com.edge.browser.webview.IBrowserView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,24 +53,18 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements TabPagerAdapter.WebViewProvider {
 
-    // UI Components
+    private static final String TAG = "MainActivity";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    // Views
     private Toolbar toolbar;
-    private TextInputEditText urlBar;
-    private ImageView btnBack, btnForward, btnRefresh, btnHome, btnTabs;
-    private ImageView btnMenu, btnReaderMode, btnReadAloud, btnPiP;
+    private EditText urlBar;
+    private ImageButton btnBack, btnForward, btnRefresh, btnHome, btnTabs, btnMenu;
     private ProgressBar progressBar;
     private ViewPager2 viewPager;
-    private TabLayout tabIndicator;
     private DrawerLayout drawerLayout;
     private RecyclerView tabsRecyclerView;
-    private FrameLayout mainContainer;
-    private FrameLayout splitContainer;
-    private View splitDivider;
-
-    // Bottom Sheet
-    private BottomSheetBehavior<View> bottomSheetBehavior;
     private View bottomSheet;
-    private RecyclerView bottomSheetRecycler;
 
     // Managers
     private TabManager tabManager;
@@ -105,54 +84,57 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private ThemeManager themeManager;
 
     // Adapters
-    private TabPagerAdapter tabPagerAdapter;
+    private TabPagerAdapter pagerAdapter;
     private TabListAdapter tabListAdapter;
 
-    // State
-    private Map<String, EdgeWebView> webViewCache = new HashMap<>();
-    private boolean isSplitScreen = false;
-    private boolean isVerticalTabs = false;
-    private boolean isIncognitoMode = false;
-    private boolean isReaderMode = false;
-    private String pendingUrl = null;
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    // WebView cache
+    private final Map<String, IBrowserView> webViewCache = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initManagers();
-        initViews();
-        setupToolbar();
-        setupViewPager();
-        setupTabDrawer();
-        setupBottomSheet();
-        setupListeners();
-        handleIntent(getIntent());
+        try {
+            setContentView(R.layout.activity_main);
+            initManagers();
+            initViews();
+            setupToolbar();
+            setupViewPager();
+            setupTabDrawer();
+            setupBottomSheet();
+            setupListeners();
+            handleIntent(getIntent());
+            checkGoogleWebView();
+        } catch (Exception e) {
+            BrowserLogger.getInstance().logCrash("MainActivity onCreate", e);
+            Toast.makeText(this, "启动失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void initManagers() {
-        tabManager = TabManager.getInstance();
-        tabGroupManager = TabGroupManager.getInstance();
-        sleepingTabManager = SleepingTabManager.getInstance();
-        downloadManager = DownloadManager.getInstance(this);
-        privacyManager = PrivacyManager.getInstance(this);
-        performanceManager = PerformanceManager.getInstance();
-        taskManager = TaskManager.getInstance();
-        mediaController = MediaController.getInstance();
-        pipManager = PictureInPictureManager.getInstance();
-        readerModeManager = ReaderModeManager.getInstance(this);
-        readAloudManager = ReadAloudManager.getInstance(this);
-        screenshotManager = ScreenshotManager.getInstance();
-        sidebarManager = SidebarManager.getInstance();
-        sideToolsManager = SideToolsManager.getInstance();
-        themeManager = ThemeManager.getInstance();
-
-        themeManager.init(this);
-        themeManager.applyTheme(this);
-        sleepingTabManager.start();
-        privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BALANCED);
+        try {
+            tabManager = TabManager.getInstance();
+            tabGroupManager = TabGroupManager.getInstance();
+            sleepingTabManager = SleepingTabManager.getInstance();
+            downloadManager = DownloadManager.getInstance(this);
+            privacyManager = PrivacyManager.getInstance(this);
+            performanceManager = PerformanceManager.getInstance();
+            taskManager = TaskManager.getInstance();
+            mediaController = MediaController.getInstance();
+            pipManager = PictureInPictureManager.getInstance();
+            readerModeManager = ReaderModeManager.getInstance(this);
+            readAloudManager = ReadAloudManager.getInstance(this);
+            screenshotManager = ScreenshotManager.getInstance();
+            sidebarManager = SidebarManager.getInstance();
+            sideToolsManager = SideToolsManager.getInstance();
+            themeManager = ThemeManager.getInstance();
+            themeManager.init(this);
+            themeManager.applyTheme(this);
+            sleepingTabManager.start();
+            privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BALANCED);
+        } catch (Exception e) {
+            BrowserLogger.getInstance().logCrash("initManagers", e);
+        }
     }
 
     private void initViews() {
@@ -164,582 +146,387 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         btnHome = findViewById(R.id.btn_home);
         btnTabs = findViewById(R.id.btn_tabs);
         btnMenu = findViewById(R.id.btn_menu);
-        btnReaderMode = findViewById(R.id.btn_reader_mode);
-        btnReadAloud = findViewById(R.id.btn_read_aloud);
-        btnPiP = findViewById(R.id.btn_pip);
         progressBar = findViewById(R.id.progress_bar);
         viewPager = findViewById(R.id.view_pager);
-        tabIndicator = findViewById(R.id.tab_indicator);
         drawerLayout = findViewById(R.id.drawer_layout);
         tabsRecyclerView = findViewById(R.id.tabs_recycler);
-        mainContainer = findViewById(R.id.main_container);
-        splitContainer = findViewById(R.id.split_container);
-        splitDivider = findViewById(R.id.split_divider);
-
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
         bottomSheet = findViewById(R.id.bottom_sheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        bottomSheetRecycler = findViewById(R.id.bottom_sheet_recycler);
     }
 
     private void setupToolbar() {
-        btnBack.setOnClickListener(v -> {
-            EdgeWebView webView = getCurrentWebView();
-            if (webView != null && webView.canGoBack()) webView.goBack();
-        });
-
-        btnForward.setOnClickListener(v -> {
-            EdgeWebView webView = getCurrentWebView();
-            if (webView != null && webView.canGoForward()) webView.goForward();
-        });
-
-        btnRefresh.setOnClickListener(v -> {
-            EdgeWebView webView = getCurrentWebView();
-            if (webView != null) {
-                if (webView.getProgress() < 100) {
-                    webView.stopLoading();
-                } else {
-                    webView.reload();
-                }
-            }
-        });
-
-        btnHome.setOnClickListener(v -> navigateTo("about:blank"));
-        btnTabs.setOnClickListener(v -> toggleTabDrawer());
-        btnMenu.setOnClickListener(v -> showMainMenu());
-
-        btnReaderMode.setOnClickListener(v -> toggleReaderMode());
-        btnReadAloud.setOnClickListener(v -> startReadAloud());
-        btnPiP.setOnClickListener(v -> pipManager.enterPictureInPicture(this));
-
-        urlBar.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEARCH) {
-                String input = urlBar.getText().toString().trim();
-                navigateTo(input);
-                urlBar.clearFocus();
-                return true;
-            }
-            return false;
-        });
-
-        urlBar.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                urlBar.selectAll();
-            }
-        });
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
     }
 
     private void setupViewPager() {
-        tabPagerAdapter = new TabPagerAdapter(this);
-        viewPager.setAdapter(tabPagerAdapter);
-        viewPager.setOffscreenPageLimit(3);
+        pagerAdapter = new TabPagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
         viewPager.setUserInputEnabled(true);
+
+        // Create initial tab
+        TabItem initialTab = tabManager.addTab("新标签页", "about:blank");
+        pagerAdapter.addTab(initialTab);
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
-                tabManager.switchToTab(position);
-                updateUIForCurrentTab();
+                TabItem tab = tabManager.getTabAt(position);
+                if (tab != null) {
+                    tabManager.switchToTab(position);
+                    IBrowserView wv = getCurrentWebView();
+                    if (wv != null) {
+                        updateUrlBar(wv.getUrl());
+                        updateNavigationButtons(wv.canGoBack(), wv.canGoForward());
+                    }
+                }
             }
         });
-
-        new TabLayoutMediator(tabIndicator, viewPager, (tab, position) -> {
-            TabItem tabItem = tabManager.getTabAt(position);
-            if (tabItem != null) {
-                tab.setText(tabItem.getTitle());
-            }
-        }).attach();
     }
 
     private void setupTabDrawer() {
-        tabListAdapter = new TabListAdapter(this, tabManager.getAllTabs(),
-                new TabListAdapter.TabListCallback() {
-                    @Override
-                    public void onTabClicked(int index) {
-                        viewPager.setCurrentItem(index, false);
-                        drawerLayout.closeDrawer(GravityCompat.END);
-                    }
-
-                    @Override
-                    public void onTabClosed(int index) {
-                        tabManager.removeTab(index);
-                        tabPagerAdapter.notifyDataSetChanged();
-                        tabListAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onTabPinned(int index) {
-                        tabManager.pinTab(index);
-                    }
-                });
-
+        tabListAdapter = new TabListAdapter(this, new ArrayList<>(), new TabListAdapter.TabListCallback() {
+            @Override public void onTabClicked(int index) {
+                tabManager.switchToTab(index);
+                viewPager.setCurrentItem(index, false);
+                drawerLayout.closeDrawer(GravityCompat.END);
+            }
+            @Override public void onTabClosed(int index) {
+                tabManager.removeTab(index);
+                tabListAdapter.updateTabs(tabManager.getAllTabs());
+            }
+            @Override public void onTabPinned(int index) {
+                tabManager.pinTab(index);
+            }
+        });
         tabsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         tabsRecyclerView.setAdapter(tabListAdapter);
     }
 
     private void setupBottomSheet() {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        bottomSheetBehavior.setPeekHeight(0);
+        // BottomSheet 在 DrawerLayout 中，不需要 CoordinatorLayout 的 Behavior
+        if (bottomSheet != null) {
+            bottomSheet.setVisibility(View.GONE);
+        }
     }
 
     private void setupListeners() {
-        tabManager.setListener(new TabManager.TabChangeListener() {
-            @Override
-            public void onTabAdded(TabItem tab) {
-                tabPagerAdapter.addTab(tab);
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-                viewPager.setCurrentItem(tabPagerAdapter.getItemCount() - 1, false);
-            }
-
-            @Override
-            public void onTabRemoved(TabItem tab) {
-                tabPagerAdapter.removeTab(tab);
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-            }
-
-            @Override
-            public void onTabSwitched(TabItem tab, int index) {
-                updateUIForTab(tab);
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-            }
-
-            @Override
-            public void onTabUpdated(TabItem tab) {
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
+        btnBack.setOnClickListener(v -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null && wv.canGoBack()) wv.goBack();
+        });
+        btnForward.setOnClickListener(v -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null && wv.canGoForward()) wv.goForward();
+        });
+        btnRefresh.setOnClickListener(v -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                if (wv.isLoading()) wv.stopLoading();
+                else wv.reload();
             }
         });
-
-        sleepingTabManager.addListener(new SleepingTabManager.SleepListener() {
-            @Override
-            public void onTabShouldSleep(TabItem tab) {
-                EdgeWebView webView = webViewCache.get(tab.getId());
-                if (webView != null) {
-                    webView.setSleeping(true);
-                }
+        btnHome.setOnClickListener(v -> navigateTo("https://www.google.com"));
+        btnTabs.setOnClickListener(v -> {
+            if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                drawerLayout.closeDrawer(GravityCompat.END);
+            } else {
+                tabListAdapter.updateTabs(tabManager.getAllTabs());
+                drawerLayout.openDrawer(GravityCompat.END);
             }
+        });
+        btnMenu.setOnClickListener(v -> showMainMenu());
 
-            @Override
-            public void onTabShouldWake(TabItem tab) {
-                EdgeWebView webView = webViewCache.get(tab.getId());
-                if (webView != null) {
-                    webView.setSleeping(false);
-                }
-            }
+        urlBar.setOnEditorActionListener((v, actionId, event) -> {
+            String url = urlBar.getText().toString().trim();
+            if (!url.isEmpty()) navigateTo(url);
+            return true;
         });
     }
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            Uri data = intent.getData();
-            if (data != null) {
-                navigateTo(data.toString());
-            }
+            String url = intent.getDataString();
+            if (url != null) navigateTo(url);
         }
     }
 
+    // === TabPagerAdapter.WebViewProvider ===
+
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
+    public IBrowserView getOrCreateWebView(TabItem tab) {
+        IBrowserView wv = webViewCache.get(tab.getId());
+        if (wv == null) {
+            wv = createBrowserView();
+            final IBrowserView finalWv = wv;
+            wv.setCallback(new EdgeWebView.WebViewCallback() {
+                @Override public void onPageStarted(String url) {
+                    handler.post(() -> urlBar.setText(url));
+                }
+                @Override public void onPageFinished(String url, String title) {
+                    handler.post(() -> {
+                        urlBar.setText(url);
+                        updateNavigationButtons(finalWv.canGoBack(), finalWv.canGoForward());
+                    });
+                }
+                @Override public void onProgressChanged(int progress) {
+                    handler.post(() -> {
+                        progressBar.setProgress(progress);
+                        progressBar.setVisibility(progress < 100 ? View.VISIBLE : View.GONE);
+                    });
+                }
+                @Override public void onReceivedIcon(Bitmap icon) {}
+                @Override public void onReceivedError(int code, String desc, String url) {
+                    handler.post(() -> Toast.makeText(MainActivity.this,
+                            "加载失败: " + desc, Toast.LENGTH_SHORT).show());
+                }
+                @Override public void onTitleChanged(String title) {
+                    handler.post(() -> {
+                        if (toolbar != null) toolbar.setTitle(title != null ? title : "极速浏览器");
+                    });
+                }
+                @Override public void onUrlChanged(String url) {
+                    handler.post(() -> urlBar.setText(url));
+                }
+            });
+            webViewCache.put(tab.getId(), wv);
+        }
+        return wv;
+    }
+
+    private IBrowserView createBrowserView() {
+        try {
+            if (GeckoRuntimeManager.getInstance().isInitialized()) {
+                BrowserLogger.getInstance().i(TAG, BrowserLogger.LogCategory.SYSTEM, "使用 Gecko 引擎");
+                return new GeckoWebView(this);
+            }
+        } catch (Exception e) {
+            BrowserLogger.getInstance().e(TAG, BrowserLogger.LogCategory.SYSTEM,
+                    "Gecko 不可用，回退 Chromium", e);
+        }
+        return new EdgeWebView(this);
     }
 
     // === Navigation ===
 
-    public void navigateTo(String input) {
-        if (input == null || input.isEmpty()) return;
-
-        String url = input.trim();
-        if (url.equals("about:blank")) {
-            // New tab page
-        } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    private void navigateTo(String url) {
+        if (url == null || url.isEmpty()) return;
+        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("about:")) {
             if (url.contains(".") && !url.contains(" ")) {
                 url = "https://" + url;
             } else {
-                url = "https://www.bing.com/search?q=" + Uri.encode(url);
+                url = "https://www.google.com/search?q=" + url;
             }
-        }
-
-        // Check for read: prefix
-        if (url.startsWith("read:")) {
-            String targetUrl = url.substring(5).trim();
-            if (!targetUrl.startsWith("http")) targetUrl = "https://" + targetUrl;
-            readerModeManager.enableReaderMode(targetUrl);
-            url = targetUrl;
-        }
-
-        pendingUrl = url;
-        TabItem currentTab = tabManager.getCurrentTab();
-        if (currentTab == null || currentTab.getUrl().equals("about:blank")) {
-            if (currentTab != null) {
-                currentTab.setUrl(url);
-                currentTab.setTitle(url);
-            } else {
-                tabManager.addTab(url, url);
-            }
-        } else {
-            tabManager.addTab(url, url);
-        }
-
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            webView.loadUrl(url);
         }
         urlBar.setText(url);
-        updateNavigationButtons();
-        privacyManager.checkHttpsUpgrade(url);
+        IBrowserView wv = getCurrentWebView();
+        if (wv != null) wv.loadUrl(url);
     }
 
-    // === Reader Mode ===
+    private void newTab(String url) {
+        TabItem tab = tabManager.addTab("新标签页", url);
+        pagerAdapter.addTab(tab);
+        viewPager.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
+    }
 
-    private void toggleReaderMode() {
-        if (isReaderMode) {
-            readerModeManager.disableReaderMode();
-            isReaderMode = false;
-            btnReaderMode.setImageResource(R.drawable.ic_reader_mode);
-        } else {
-            EdgeWebView webView = getCurrentWebView();
-            if (webView != null) {
-                readerModeManager.enableReaderMode(webView.getCurrentUrl());
-                isReaderMode = true;
-                btnReaderMode.setImageResource(R.drawable.ic_reader_mode_active);
-            }
+    private void updateUrlBar(String url) {
+        if (url != null && !url.isEmpty() && !"about:blank".equals(url)) {
+            urlBar.setText(url);
         }
     }
 
-    private void startReadAloud() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            readAloudManager.readAloud(webView);
-        }
+    private void updateNavigationButtons(boolean canBack, boolean canForward) {
+        if (btnBack != null) btnBack.setEnabled(canBack);
+        if (btnForward != null) btnForward.setEnabled(canForward);
     }
 
-    // === Tab Drawer ===
-
-    private void toggleTabDrawer() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
-        } else {
-            tabListAdapter.updateTabs(tabManager.getAllTabs());
-            drawerLayout.openDrawer(GravityCompat.END);
-        }
+    private IBrowserView getCurrentWebView() {
+        int pos = viewPager.getCurrentItem();
+        TabItem tab = tabManager.getTabAt(pos);
+        if (tab != null) return webViewCache.get(tab.getId());
+        return null;
     }
 
     // === Main Menu ===
 
     private void showMainMenu() {
-        PopupMenu popup = new PopupMenu(this, btnMenu);
-        popup.getMenuInflater().inflate(R.menu.main_menu, popup.getMenu());
+        IBrowserView wv = getCurrentWebView();
+        String[] items = wv != null && wv.isWebViewBased() ?
+                new String[]{"新标签", "阅读模式", "朗读", "截图", "添加到书签",
+                        "下载管理", "历史记录", "隐私设置", "性能中心", "任务管理器", "设置", "日志查看"} :
+                new String[]{"新标签", "截图", "添加到书签", "下载管理", "历史记录",
+                        "隐私设置", "性能中心", "设置", "日志查看"};
 
-        popup.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.action_new_tab) {
-                tabManager.addTab("新标签页", "about:blank");
-            } else if (id == R.id.action_new_incognito_tab) {
-                openIncognitoTab();
-            } else if (id == R.id.action_split_screen) {
-                toggleSplitScreen();
-            } else if (id == R.id.action_collections) {
-                startActivity(new Intent(this, CollectionActivity.class));
-            } else if (id == R.id.action_downloads) {
-                startActivity(new Intent(this, DownloadActivity.class));
-            } else if (id == R.id.action_bookmarks) {
-                startActivity(new Intent(this, BookmarkActivity.class));
-            } else if (id == R.id.action_history) {
-                startActivity(new Intent(this, HistoryActivity.class));
-            } else if (id == R.id.action_task_manager) {
-                startActivity(new Intent(this, TaskManagerActivity.class));
-            } else if (id == R.id.action_performance) {
-                startActivity(new Intent(this, PerformanceActivity.class));
-            } else if (id == R.id.action_settings) {
-                startActivity(new Intent(this, SettingsActivity.class));
-            } else if (id == R.id.action_reader_mode) {
-                toggleReaderMode();
-            } else if (id == R.id.action_read_aloud) {
-                startReadAloud();
-            } else if (id == R.id.action_screenshot) {
-                screenshotManager.captureScreenshot(this, getCurrentWebView());
-            } else if (id == R.id.action_translate) {
-                translatePage();
-            } else if (id == R.id.action_find_in_page) {
-                showFindInPage();
-            } else if (id == R.id.action_desktop_site) {
-                toggleDesktopSite();
-            } else if (id == R.id.action_add_to_collections) {
-                addToCollections();
-            } else if (id == R.id.action_save_as_pdf) {
-                saveAsPdf();
-            } else if (id == R.id.action_share) {
-                sharePage();
-            } else if (id == R.id.action_print) {
-                printPage();
-            }
-            return true;
-        });
-
-        popup.show();
-    }
-
-    // === Split Screen ===
-
-    private void toggleSplitScreen() {
-        isSplitScreen = !isSplitScreen;
-        if (isSplitScreen) {
-            splitContainer.setVisibility(View.VISIBLE);
-            splitDivider.setVisibility(View.VISIBLE);
-            // Setup split screen WebViews
-            setupSplitScreen();
-        } else {
-            splitContainer.setVisibility(View.GONE);
-            splitDivider.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupSplitScreen() {
-        // Implement split screen with two WebViews
-        FrameLayout leftPane = findViewById(R.id.split_left);
-        FrameLayout rightPane = findViewById(R.id.split_right);
-
-        EdgeWebView leftWebView = new EdgeWebView(this);
-        EdgeWebView rightWebView = new EdgeWebView(this);
-
-        leftPane.addView(leftWebView, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        rightPane.addView(rightWebView, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        leftWebView.loadUrl(tabManager.getCurrentTab().getUrl());
-        rightWebView.loadUrl("https://www.bing.com");
+        new AlertDialog.Builder(this)
+                .setTitle("菜单")
+                .setItems(items, (dialog, which) -> {
+                    String item = items[which];
+                    switch (item) {
+                        case "新标签": newTab("about:blank"); break;
+                        case "阅读模式": enableReaderMode(); break;
+                        case "朗读": startReadAloud(); break;
+                        case "截图": takeScreenshot(); break;
+                        case "添加到书签": addBookmark(); break;
+                        case "下载管理": startActivity(new Intent(this, DownloadActivity.class)); break;
+                        case "历史记录": startActivity(new Intent(this, HistoryActivity.class)); break;
+                        case "隐私设置": showPrivacyDialog(); break;
+                        case "性能中心": startActivity(new Intent(this, PerformanceActivity.class)); break;
+                        case "任务管理器": startActivity(new Intent(this, TaskManagerActivity.class)); break;
+                        case "设置": startActivity(new Intent(this, SettingsActivity.class)); break;
+                        case "日志查看": showLogViewer(); break;
+                    }
+                })
+                .show();
     }
 
     // === Feature Methods ===
 
-    private void openIncognitoTab() {
-        TabItem incognitoTab = new TabItem("InPrivate", "about:blank");
-        incognitoTab.setIncognito(true);
-        tabManager.addTab(incognitoTab);
-    }
-
-    private void translatePage() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            String url = webView.getCurrentUrl();
-            String translateUrl = "https://translate.google.com/translate?sl=auto&tl=zh-CN&u=" + Uri.encode(url);
-            webView.loadUrl(translateUrl);
+    private void enableReaderMode() {
+        IBrowserView wv = getCurrentWebView();
+        if (wv == null) return;
+        if (!wv.isWebViewBased()) {
+            Toast.makeText(this, "阅读模式仅支持 Chromium 引擎", Toast.LENGTH_SHORT).show();
+            return;
         }
+        readerModeManager.enableReaderMode((EdgeWebView) wv);
+        Toast.makeText(this, "阅读模式已启用", Toast.LENGTH_SHORT).show();
     }
 
-    private void showFindInPage() {
-        // Show find in page dialog
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            webView.findNext(true);
+    private void startReadAloud() {
+        IBrowserView wv = getCurrentWebView();
+        if (wv == null) return;
+        if (!wv.isWebViewBased()) {
+            Toast.makeText(this, "朗读功能仅支持 Chromium 引擎", Toast.LENGTH_SHORT).show();
+            return;
         }
+        readAloudManager.readAloud((EdgeWebView) wv);
+        Toast.makeText(this, "开始朗读", Toast.LENGTH_SHORT).show();
     }
 
-    private void toggleDesktopSite() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            WebSettings settings = webView.getSettings();
-            String currentUA = settings.getUserAgentString();
-            if (currentUA.contains("Mobile")) {
-                settings.setUserAgentString(currentUA.replace("Mobile", "").replace("Android", "Windows NT 10.0"));
+    private void takeScreenshot() {
+        IBrowserView wv = getCurrentWebView();
+        if (wv == null) return;
+        try {
+            Bitmap bmp = wv.captureBitmap();
+            if (bmp != null) {
+                String path = screenshotManager.saveBitmap(bmp);
+                if (path != null) {
+                    Toast.makeText(this, "截图已保存: " + path, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "截图保存失败", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                settings.setUserAgentString(null); // Reset to default
+                Toast.makeText(this, "截图失败: 页面未加载", Toast.LENGTH_SHORT).show();
             }
-            webView.reload();
+        } catch (Exception e) {
+            Toast.makeText(this, "截图失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void addToCollections() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            Intent intent = new Intent(this, CollectionActivity.class);
-            intent.putExtra("url", webView.getCurrentUrl());
-            intent.putExtra("title", webView.getCurrentTitle());
-            startActivity(intent);
+    private void addBookmark() {
+        IBrowserView wv = getCurrentWebView();
+        if (wv == null) return;
+        String url = wv.getUrl();
+        String title = wv.getTitle();
+        if (url != null && !url.isEmpty()) {
+            BrowserLogger.getInstance().i(TAG, BrowserLogger.LogCategory.BROWSER,
+                    "添加书签: " + title + " - " + url);
+            Toast.makeText(this, "已添加书签: " + (title != null ? title : url), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void saveAsPdf() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            PrintManager printManager = (PrintManager) getSystemService(PRINT_SERVICE);
-            printManager.print("EdgeBrowser PDF", webView.createPrintDocumentAdapter("webpage"), null);
-        }
+    private void showPrivacyDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("隐私设置")
+                .setItems(new String[]{"清除浏览数据", "跟踪保护(基础)", "跟踪保护(平衡)", "跟踪保护(严格)"},
+                        (d, which) -> {
+                            switch (which) {
+                                case 0: privacyManager.clearBrowsingData(true, true, true);
+                                    Toast.makeText(this, "浏览数据已清除", Toast.LENGTH_SHORT).show(); break;
+                                case 1: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BASIC); break;
+                                case 2: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.BALANCED); break;
+                                case 3: privacyManager.applyTrackingProtection(PrivacyManager.TrackingLevel.STRICT); break;
+                            }
+                        }).show();
     }
 
-    private void sharePage() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, webView.getCurrentTitle());
-            shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getCurrentUrl());
-            startActivity(Intent.createChooser(shareIntent, "分享到"));
-        }
+    // === Log Viewer ===
+
+    private void showLogViewer() {
+        String logs = BrowserLogger.getInstance().getAllLogs();
+        StringBuilder info = new StringBuilder();
+        info.append("=== 浏览器信息 ===\n");
+        info.append(ChromiumWebViewFactory.getInstance().getChromiumInfo());
+        info.append("\n当前引擎: ");
+        IBrowserView wv = getCurrentWebView();
+        info.append(wv != null ? wv.getEngineType() : "无");
+        info.append("\n\n=== 运行日志 ===\n");
+        info.append(logs);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("日志查看")
+                .setMessage(info.toString())
+                .setPositiveButton("导出日志", (d, which) -> {
+                    File file = BrowserLogger.getInstance().exportLogs();
+                    String path = file != null ? file.getAbsolutePath() : "导出失败";
+                    Toast.makeText(this, "日志已导出到: " + path, Toast.LENGTH_LONG).show();
+                })
+                .setNegativeButton("清除日志", (d, which) -> {
+                    BrowserLogger.getInstance().clearLogs();
+                    Toast.makeText(this, "日志已清除", Toast.LENGTH_SHORT).show();
+                })
+                .setNeutralButton("关闭", null)
+                .create();
+        dialog.show();
     }
 
-    private void printPage() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            PrintManager pm = (PrintManager) getSystemService(PRINT_SERVICE);
-            pm.print("EdgeBrowser Print", webView.createPrintDocumentAdapter("document"), null);
-        }
-    }
-
-    // === UI Helpers ===
-
-    private EdgeWebView getCurrentWebView() {
-        TabItem currentTab = tabManager.getCurrentTab();
-        if (currentTab == null) return null;
-        return webViewCache.get(currentTab.getId());
-    }
-
-    public EdgeWebView getOrCreateWebView(TabItem tab) {
-        EdgeWebView webView = webViewCache.get(tab.getId());
-        if (webView == null) {
-            webView = new EdgeWebView(this);
-            webViewCache.put(tab.getId(), webView);
-
-            webView.setCallback(new EdgeWebView.WebViewCallback() {
-                @Override
-                public void onPageStarted(String url) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    urlBar.setText(url);
+    private void checkGoogleWebView() {
+        ChromiumWebViewFactory factory = ChromiumWebViewFactory.getInstance();
+        if (factory.shouldPromptInstallGoogleWebView()) {
+            handler.postDelayed(() -> {
+                if (!isFinishing() && !isDestroyed()) {
+                    factory.showInstallGoogleWebViewDialog(this);
                 }
-
-                @Override
-                public void onPageFinished(String url, String title) {
-                    progressBar.setVisibility(View.GONE);
-                    tab.setTitle(title);
-                    tab.setUrl(url);
-                    urlBar.setText(url);
-                    updateNavigationButtons();
-                    updateReaderModeButton();
-                }
-
-                @Override
-                public void onProgressChanged(int progress) {
-                    progressBar.setProgress(progress);
-                    if (progress == 100) progressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onReceivedIcon(Bitmap icon) {
-                    // Update tab icon
-                }
-
-                @Override
-                public void onReceivedError(int errorCode, String description, String failingUrl) {
-                    Toast.makeText(MainActivity.this, "加载失败: " + description, Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onTitleChanged(String title) {
-                    tab.setTitle(title);
-                    urlBar.setText(tab.getUrl());
-                }
-
-                @Override
-                public void onUrlChanged(String url) {
-                    urlBar.setText(url);
-                }
-            });
-
-            if (tab.getUrl() != null && !tab.getUrl().equals("about:blank")) {
-                webView.loadUrl(tab.getUrl());
-            }
-        }
-        return webView;
-    }
-
-    private void updateUIForCurrentTab() {
-        TabItem tab = tabManager.getCurrentTab();
-        if (tab != null) {
-            updateUIForTab(tab);
-        }
-    }
-
-    private void updateUIForTab(TabItem tab) {
-        urlBar.setText(tab.getUrl());
-        updateNavigationButtons();
-        updateReaderModeButton();
-    }
-
-    private void updateNavigationButtons() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            btnBack.setAlpha(webView.canGoBack() ? 1.0f : 0.4f);
-            btnForward.setAlpha(webView.canGoForward() ? 1.0f : 0.4f);
-            btnRefresh.setImageResource(
-                    webView.getProgress() < 100 ? R.drawable.ic_close : R.drawable.ic_refresh);
-        }
-    }
-
-    private void updateReaderModeButton() {
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) {
-            btnReaderMode.setVisibility(
-                    readerModeManager.isReaderAvailable(webView.getCurrentUrl()) ? View.VISIBLE : View.GONE);
+            }, 500);
         }
     }
 
     // === Lifecycle ===
 
     @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
-            return;
-        }
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            if (tabManager.getTabCount() > 1) {
-                tabManager.removeTab(tabManager.getCurrentTabIndex());
-            } else {
-                super.onBackPressed();
-            }
-        }
+    protected void onResume() {
+        super.onResume();
+        IBrowserView wv = getCurrentWebView();
+        if (wv != null) wv.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) webView.onPause();
-        performanceManager.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EdgeWebView webView = getCurrentWebView();
-        if (webView != null) webView.onResume();
-        performanceManager.onResume();
+        IBrowserView wv = getCurrentWebView();
+        if (wv != null) wv.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sleepingTabManager.stop();
-        for (EdgeWebView webView : webViewCache.values()) {
-            webView.destroy();
+        for (IBrowserView wv : webViewCache.values()) {
+            try { wv.destroy(); } catch (Exception ignored) {}
         }
         webViewCache.clear();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ScreenshotManager.REQUEST_SCREENSHOT) {
-            screenshotManager.handleScreenshotResult(resultCode, data);
+    public void onBackPressed() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        IBrowserView wv = getCurrentWebView();
+        if (wv != null && wv.canGoBack()) {
+            wv.goBack();
+        } else {
+            super.onBackPressed();
         }
     }
 }

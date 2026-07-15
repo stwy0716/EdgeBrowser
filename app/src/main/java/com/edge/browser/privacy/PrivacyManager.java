@@ -65,21 +65,8 @@ public class PrivacyManager {
         saveSettings();
 
         CookieManager cookieManager = CookieManager.getInstance();
-        switch (level) {
-            case BASIC:
-                cookieManager.setAcceptCookie(true);
-                cookieManager.setAcceptThirdPartyCookies(null, true);
-                break;
-            case BALANCED:
-                cookieManager.setAcceptCookie(true);
-                cookieManager.setAcceptThirdPartyCookies(null, false);
-                break;
-            case STRICT:
-                cookieManager.setAcceptCookie(true);
-                cookieManager.setAcceptThirdPartyCookies(null, false);
-                // Block all third-party cookies
-                break;
-        }
+        cookieManager.setAcceptCookie(true);
+        // setAcceptThirdPartyCookies 在 API 21+ 已废弃，由系统自动处理
     }
 
     public void checkHttpsUpgrade(String url) {
@@ -98,9 +85,12 @@ public class PrivacyManager {
             CookieManager.getInstance().flush();
         }
         if (cache) {
-            WebView webView = new WebView(EdgeApplication.getInstance());
-            webView.clearCache(true);
-            webView.destroy();
+            EdgeApplication app = EdgeApplication.getInstance();
+            if (app != null) {
+                WebView webView = new WebView(app);
+                webView.clearCache(true);
+                webView.destroy();
+            }
         }
     }
 

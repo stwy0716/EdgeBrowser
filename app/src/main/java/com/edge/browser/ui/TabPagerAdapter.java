@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.edge.browser.tab.TabItem;
-import com.edge.browser.webview.EdgeWebView;
+import com.edge.browser.webview.IBrowserView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.TabViewHolder> {
 
     public interface WebViewProvider {
-        EdgeWebView getOrCreateWebView(TabItem tab);
+        IBrowserView getOrCreateWebView(TabItem tab);
     }
 
     private final Context context;
@@ -61,15 +61,17 @@ public class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.TabVie
     @Override
     public void onBindViewHolder(@NonNull TabViewHolder holder, int position) {
         TabItem tab = tabs.get(position);
-        EdgeWebView webView = webViewProvider.getOrCreateWebView(tab);
+        IBrowserView webView = webViewProvider.getOrCreateWebView(tab);
+        if (webView == null) return;
 
+        View view = webView.getView();
         FrameLayout container = (FrameLayout) holder.itemView;
         container.removeAllViews();
 
-        if (webView.getParent() != null) {
-            ((ViewGroup) webView.getParent()).removeView(webView);
+        if (view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view);
         }
-        container.addView(webView, new FrameLayout.LayoutParams(
+        container.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
     }

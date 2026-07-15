@@ -36,7 +36,9 @@ public class PerformanceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_performance);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("性能中心");
@@ -106,7 +108,9 @@ public class PerformanceActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        performanceManager.stopMonitoring();
+        if (performanceManager != null) {
+            performanceManager.stopMonitoring();
+        }
     }
 
     @Override

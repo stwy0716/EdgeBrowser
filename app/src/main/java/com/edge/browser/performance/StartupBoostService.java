@@ -22,11 +22,9 @@ public class StartupBoostService extends Service {
 
     private void preloadCore() {
         if (!isPreloaded) {
-            // Pre-initialize WebView engine
-            // This reduces cold start time by ~40%
-            new Thread(() -> {
+            // Pre-initialize WebView engine on main thread
+            handler.post(() -> {
                 try {
-                    // Preload WebView provider
                     android.webkit.WebView webView = new android.webkit.WebView(
                             getApplicationContext());
                     webView.destroy();
@@ -34,7 +32,7 @@ public class StartupBoostService extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }).start();
+            });
         }
     }
 

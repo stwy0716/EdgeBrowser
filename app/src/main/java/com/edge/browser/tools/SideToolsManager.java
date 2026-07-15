@@ -2,6 +2,7 @@ package com.edge.browser.tools;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class SideToolsManager {
         toolActions.put("translator", (context, params) -> {
             String text = params.length > 0 ? params[0] : "";
             String url = "https://translate.google.com/?sl=auto&tl=zh-CN&text=" + Uri.encode(text);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
         // Todo list
@@ -60,7 +61,7 @@ public class SideToolsManager {
         toolActions.put("office_preview", (context, params) -> {
             if (params.length > 0) {
                 String url = "https://view.officeapps.live.com/op/view.aspx?src=" + Uri.encode(params[0]);
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
         });
 
@@ -73,21 +74,21 @@ public class SideToolsManager {
         toolActions.put("search", (context, params) -> {
             String query = params.length > 0 ? params[0] : "";
             String url = "https://www.bing.com/search?q=" + Uri.encode(query);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
         // Shopping comparison
         toolActions.put("shopping", (context, params) -> {
             String query = params.length > 0 ? params[0] : "";
             String url = "https://www.bing.com/shop?q=" + Uri.encode(query);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
         // Email
         toolActions.put("email", (context, params) -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:"));
-            context.startActivity(intent);
+            safeStartActivity(context, intent);
         });
 
         // QR code
@@ -95,6 +96,17 @@ public class SideToolsManager {
             String url = params.length > 0 ? params[0] : "";
             // Generate and show QR code
         });
+    }
+
+    private static void safeStartActivity(Context context, Intent intent) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            if (pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+                context.startActivity(intent);
+            }
+        } catch (Exception ignored) {
+            // No activity to handle this intent
+        }
     }
 
     public void executeTool(String toolId, Context context, String... params) {

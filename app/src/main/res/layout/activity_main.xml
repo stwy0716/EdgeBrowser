@@ -205,7 +205,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <View
+    <FrameLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -216,6 +216,6 @@
             android:id="@+id/bottom_sheet_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </View>
+    </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -13,6 +13,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import com.edge.browser.webview.IBrowserView;
 
 public class ScreenshotManager {
 
@@ -82,9 +87,12 @@ public class ScreenshotManager {
     private void captureFullPage(WebView webView) {
         // Capture full page by scrolling
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            int webViewWidth = webView.getWidth();
+            if (webViewWidth <= 0) return;
             float scale = webView.getScale();
             int webViewHeight = (int) (webView.getContentHeight() * scale);
-            Bitmap fullBitmap = Bitmap.createBitmap(webView.getWidth(), webViewHeight, Bitmap.Config.ARGB_8888);
+            if (webViewHeight <= 0) return;
+            Bitmap fullBitmap = Bitmap.createBitmap(webViewWidth, webViewHeight, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(fullBitmap);
             canvas.scale(scale, scale);
 
@@ -113,7 +121,10 @@ public class ScreenshotManager {
     }
 
     private Bitmap captureWebViewBitmap(WebView webView) {
-        Bitmap bitmap = Bitmap.createBitmap(webView.getWidth(), webView.getHeight(), Bitmap.Config.ARGB_8888);
+        int width = webView.getWidth();
+        int height = webView.getHeight();
+        if (width <= 0 || height <= 0) return null;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         webView.draw(canvas);
         return bitmap;
@@ -134,6 +145,28 @@ public class ScreenshotManager {
             if (callback != null) callback.onScreenshotSaved(file.getAbsolutePath());
         } catch (Exception e) {
             if (callback != null) callback.onScreenshotError(e.getMessage());
+        }
+    }
+
+    /**
+     * 保存 Bitmap 并返回路径
+     */
+    public String saveBitmap(Bitmap bitmap) {
+        if (bitmap == null) return null;
+        String fileName = "Screenshot_" +
+                new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date()) + ".png";
+        try {
+            File dir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "EdgeBrowser");
+            if (!dir.exists()) dir.mkdirs();
+            File file = new File(dir, fileName);
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            return file.getAbsolutePath();
+        } catch (Exception e) {
+            return null;
         }
     }
 

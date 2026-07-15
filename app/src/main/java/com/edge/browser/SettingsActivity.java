@@ -24,7 +24,9 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("设置");
@@ -166,7 +168,10 @@ public class SettingsActivity extends AppCompatActivity {
                     ThemeManager.ThemeMode mode = ThemeManager.ThemeMode.valueOf(value);
                     ThemeManager.getInstance().setCurrentTheme(mode);
                     // Recreate activity to apply theme
-                    getActivity().recreate();
+                    android.app.Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.recreate();
+                    }
                     return true;
                 });
             }
