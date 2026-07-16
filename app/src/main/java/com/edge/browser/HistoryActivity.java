@@ -51,7 +51,7 @@ public class HistoryActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("历史记录");
         }
 
-        historyRecycler = findViewById(R.id.history_recycler);
+        historyRecycler = findViewById(R.id.history_list);
         historyRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         historyItems = loadHistory();

@@ -43,7 +43,7 @@ public class DownloadActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("下载管理");
         }
 
-        downloadsRecycler = findViewById(R.id.downloads_recycler);
+        downloadsRecycler = findViewById(R.id.download_list);
         emptyText = findViewById(R.id.empty_text);
         downloadsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
@@ -190,8 +190,8 @@ public class DownloadActivity extends AppCompatActivity {
 
             ViewHolder(View itemView) {
                 super(itemView);
-                fileName = itemView.findViewById(R.id.download_name);
-                fileSize = itemView.findViewById(R.id.download_size);
+                fileName = itemView.findViewById(R.id.download_title);
+                fileSize = itemView.findViewById(R.id.download_status);
                 statusText = itemView.findViewById(R.id.download_status);
                 progressBar = itemView.findViewById(R.id.download_progress);
                 btnCancel = itemView.findViewById(R.id.btn_cancel);

@@ -42,7 +42,7 @@ public class TaskManagerActivity extends AppCompatActivity {
         }
 
         taskManager = TaskManager.getInstance();
-        processesRecycler = findViewById(R.id.processes_recycler);
+        processesRecycler = findViewById(R.id.task_list);
         totalMemoryText = findViewById(R.id.process_memory);
         btnKillAll = findViewById(R.id.btn_kill_all);
 

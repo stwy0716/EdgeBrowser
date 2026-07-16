@@ -46,7 +46,7 @@ public class PerformanceActivity extends AppCompatActivity {
 
         performanceManager = PerformanceManager.getInstance();
         tabManager = TabManager.getInstance();
-        statsRecycler = findViewById(R.id.stats_recycler);
+        statsRecycler = findViewById(R.id.performance_list);
         summaryText = findViewById(R.id.summary_text);
 
         statsRecycler.setLayoutManager(new LinearLayoutManager(this));

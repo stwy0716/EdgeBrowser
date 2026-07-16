@@ -3,30 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:colorBackground">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:titleTextColor="@android:color/white" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/processes_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingVertical="8dp" />
+        android:background="?android:colorBackground"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="任务管理器"
+        app:titleTextColor="?android:textColorPrimary"
+        app:titleCentered="false" />
 
     <Button
         android:id="@+id/btn_kill_all"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_bg"
-        android:text="关闭非核心进程"
-        android:textColor="@android:color/white"
-        android:layout_margin="8dp" />
+        android:text="结束所有"
+        android:textColor="@color/md_error"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/task_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp" />
 </LinearLayout>

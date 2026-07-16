@@ -52,7 +52,7 @@ public class CollectionActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("集锦");
         }
 
-        collectionsRecycler = findViewById(R.id.collections_recycler);
+        collectionsRecycler = findViewById(R.id.collection_list);
         collectionsRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         // Handle incoming URL from "add to collections"

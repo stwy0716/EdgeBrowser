@@ -56,7 +56,7 @@ public class BookmarkActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("收藏夹");
         }
 
-        bookmarksRecycler = findViewById(R.id.bookmarks_recycler);
+        bookmarksRecycler = findViewById(R.id.bookmark_list);
         bookmarksRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         bookmarks = loadBookmarks();

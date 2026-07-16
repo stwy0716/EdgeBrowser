@@ -103,10 +103,10 @@ public class TabListAdapter extends RecyclerView.Adapter<TabListAdapter.ViewHold
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            card = itemView.findViewById(R.id.tab_card);
+            card = (MaterialCardView) itemView;
             titleText = itemView.findViewById(R.id.tab_title);
             urlText = itemView.findViewById(R.id.tab_url);
-            closeIcon = itemView.findViewById(R.id.btn_tab_close);
+            closeIcon = itemView.findViewById(R.id.btn_close_tab);
             pinIcon = itemView.findViewById(R.id.btn_tab_pin);
             muteIcon = itemView.findViewById(R.id.btn_tab_mute);
             groupIndicator = itemView.findViewById(R.id.group_indicator);
