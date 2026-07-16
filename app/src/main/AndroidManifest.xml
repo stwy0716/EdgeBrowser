@@ -100,8 +100,23 @@
             android:configChanges="orientation|screenSize" />
 
         <activity
+            android:name=".privacy.CertificateViewerActivity"
+            android:label="证书信息"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
             android:name=".qr.QRScannerActivity"
             android:label="扫描二维码"
+            android:configChanges="orientation|screenSize" />
+
+        <activity
+            android:name=".devtools.DevToolsActivity"
+            android:label="开发者工具"
+            android:configChanges="orientation|screenSize" />
+
+        <service
+            android:name=".sync.SyncActivity"
+            android:label="数据同步"
             android:configChanges="orientation|screenSize" />
 
         <service

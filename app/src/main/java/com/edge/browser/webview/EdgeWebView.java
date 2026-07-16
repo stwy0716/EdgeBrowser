@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.edge.browser.BrowserLogger;
 import com.edge.browser.BrowserLogger.LogCategory;
 import com.edge.browser.adblock.AdBlocker;
+import com.edge.browser.content.DataSaverManager;
 import com.edge.browser.nightmode.NightModeManager;
 import com.edge.browser.video.VideoDownloader;
 
@@ -183,6 +184,10 @@ public class EdgeWebView extends WebView implements IBrowserView {
             String url = request.getUrl().toString();
             if (AdBlocker.getInstance().shouldBlock(url)) {
                 BrowserLogger.getInstance().d(TAG, LogCategory.PRIVACY, "广告拦截: " + url);
+                return new WebResourceResponse("text/plain", "utf-8", null);
+            }
+            if (DataSaverManager.getInstance(view.getContext()).shouldBlockImage(url, currentUrl)) {
+                BrowserLogger.getInstance().d(TAG, LogCategory.SYSTEM, "数据节省拦截图片: " + url);
                 return new WebResourceResponse("text/plain", "utf-8", null);
             }
             return super.shouldInterceptRequest(view, request);

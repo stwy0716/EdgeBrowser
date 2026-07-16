@@ -20,13 +20,22 @@ import com.edge.browser.extensions.ExtensionInfo;
 import com.edge.browser.extensions.ExtensionManager;
 import com.edge.browser.nightmode.NightModeManager;
 import com.edge.browser.password.PasswordManager;
+import com.edge.browser.privacy.ClearOnExitManager;
 import com.edge.browser.privacy.PrivacyManager;
 import com.edge.browser.quicklinks.QuickLinkManager;
+import com.edge.browser.sync.SyncActivity;
 import com.edge.browser.reading.ReadingListManager;
 import com.edge.browser.search.SearchEngineManager;
 import com.edge.browser.startup.StartupConfigManager;
 import com.edge.browser.stats.StatsManager;
 import com.edge.browser.theme.ThemeManager;
+import com.edge.browser.security.HttpsOnlyMode;
+import com.edge.browser.security.DohManager;
+import com.edge.browser.security.DoNotTrackManager;
+import com.edge.browser.security.AntiFingerprintManager;
+import com.edge.browser.security.SiteCookieManager;
+import com.edge.browser.security.PermissionCenter;
+import android.content.Intent;
 
 import java.util.List;
 
@@ -44,6 +53,12 @@ public class SettingsActivity extends AppCompatActivity {
     private ReadingListManager readingListManager;
     private ExtensionManager extensionManager;
     private QuickLinkManager quickLinkManager;
+    private HttpsOnlyMode httpsOnlyMode;
+    private DohManager dohManager;
+    private DoNotTrackManager dntManager;
+    private AntiFingerprintManager antiFingerprintManager;
+    private SiteCookieManager siteCookieManager;
+    private PermissionCenter permissionCenter;
 
     private RadioGroup searchEngineGroup;
     private RadioGroup engineGroup;
@@ -59,6 +74,15 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView btnReadingList;
     private TextView btnExtensions;
     private TextView btnQuickLinks;
+    private SwitchCompat httpsOnlySwitch;
+    private SwitchCompat dohSwitch;
+    private SwitchCompat dntSwitch;
+    private SwitchCompat antiFingerprintSwitch;
+    private SwitchCompat thirdPartyCookieSwitch;
+    private TextView btnCookieManager;
+    private TextView btnPermissionCenter;
+    private SwitchCompat clearOnExitSwitch;
+    private TextView btnDataSync;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +117,12 @@ public class SettingsActivity extends AppCompatActivity {
         readingListManager = ReadingListManager.getInstance(this);
         extensionManager = ExtensionManager.getInstance(this);
         quickLinkManager = QuickLinkManager.getInstance(this);
+        httpsOnlyMode = HttpsOnlyMode.getInstance(this);
+        dohManager = DohManager.getInstance(this);
+        dntManager = DoNotTrackManager.getInstance(this);
+        antiFingerprintManager = AntiFingerprintManager.getInstance(this);
+        siteCookieManager = SiteCookieManager.getInstance(this);
+        permissionCenter = PermissionCenter.getInstance(this);
     }
 
     private void initViews() {
@@ -110,6 +140,15 @@ public class SettingsActivity extends AppCompatActivity {
         btnReadingList = findViewById(R.id.btn_reading_list);
         btnExtensions = findViewById(R.id.btn_extensions);
         btnQuickLinks = findViewById(R.id.btn_quick_links);
+        httpsOnlySwitch = findViewById(R.id.https_only_switch);
+        dohSwitch = findViewById(R.id.doh_switch);
+        dntSwitch = findViewById(R.id.dnt_switch);
+        antiFingerprintSwitch = findViewById(R.id.anti_fingerprint_switch);
+        thirdPartyCookieSwitch = findViewById(R.id.third_party_cookie_switch);
+        btnCookieManager = findViewById(R.id.btn_cookie_manager);
+        btnPermissionCenter = findViewById(R.id.btn_permission_center);
+        clearOnExitSwitch = findViewById(R.id.clear_on_exit_switch);
+        btnDataSync = findViewById(R.id.btn_data_sync);
 
         // 填充搜索引擎选项
         for (String key : SearchEngineManager.ENGINES.keySet()) {
@@ -207,6 +246,13 @@ public class SettingsActivity extends AppCompatActivity {
         // 夜间模式
         nightModeManager.loadState(DatabaseHelper.getInstance(this));
         nightModeSwitch.setChecked(nightModeManager.isEnabled());
+
+        // 隐私与安全
+        httpsOnlySwitch.setChecked(httpsOnlyMode.isEnabled());
+        dohSwitch.setChecked(dohManager.isEnabled());
+        dntSwitch.setChecked(dntManager.isEnabled());
+        antiFingerprintSwitch.setChecked(antiFingerprintManager.isEnabled());
+        thirdPartyCookieSwitch.setChecked(siteCookieManager.isThirdPartyCookieBlocking());
     }
 
     private void setupListeners() {
@@ -448,6 +494,174 @@ public class SettingsActivity extends AppCompatActivity {
                         .setNegativeButton("关闭", null)
                         .show();
             }
+        });
+
+        // HTTPS Only 模式
+        httpsOnlySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            httpsOnlyMode.setEnabled(isChecked);
+            httpsOnlyMode.saveState(DatabaseHelper.getInstance(this));
+            Toast.makeText(this, isChecked ? "HTTPS Only 模式已开启" : "HTTPS Only 模式已关闭", Toast.LENGTH_SHORT).show();
+        });
+
+        // DNS over HTTPS
+        dohSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            dohManager.setEnabled(isChecked);
+            dohManager.saveState(DatabaseHelper.getInstance(this));
+            Toast.makeText(this, isChecked ? "DNS over HTTPS 已开启" : "DNS over HTTPS 已关闭", Toast.LENGTH_SHORT).show();
+        });
+
+        // Do Not Track
+        dntSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            dntManager.setEnabled(isChecked);
+            dntManager.saveState(DatabaseHelper.getInstance(this));
+            Toast.makeText(this, isChecked ? "Do Not Track 已开启" : "Do Not Track 已关闭", Toast.LENGTH_SHORT).show();
+        });
+
+        // 反指纹追踪
+        antiFingerprintSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            antiFingerprintManager.setEnabled(isChecked);
+            antiFingerprintManager.saveState(DatabaseHelper.getInstance(this));
+            Toast.makeText(this, isChecked ? "反指纹追踪已开启" : "反指纹追踪已关闭", Toast.LENGTH_SHORT).show();
+        });
+
+        // 阻止第三方 Cookie
+        thirdPartyCookieSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            siteCookieManager.setThirdPartyCookieBlocking(isChecked);
+            siteCookieManager.saveState(DatabaseHelper.getInstance(this));
+            Toast.makeText(this, isChecked ? "第三方 Cookie 已阻止" : "第三方 Cookie 已允许", Toast.LENGTH_SHORT).show();
+        });
+
+        // 管理 Cookie
+        btnCookieManager.setOnClickListener(v -> {
+            java.util.List<String> cookieDomains = siteCookieManager.getDomainsWithCookies();
+            if (cookieDomains.isEmpty()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("管理 Cookie")
+                        .setMessage("暂无已保存的 Cookie")
+                        .setPositiveButton("确定", null)
+                        .show();
+            } else {
+                String[] domains = cookieDomains.toArray(new String[0]);
+                new AlertDialog.Builder(this)
+                        .setTitle("管理 Cookie")
+                        .setItems(domains, (d, which) -> {
+                            String domain = domains[which];
+                            new AlertDialog.Builder(this)
+                                    .setTitle(domain)
+                                    .setMessage("清除此站点的所有 Cookie？")
+                                    .setPositiveButton("清除", (di, w) -> {
+                                        siteCookieManager.clearCookiesForDomain(domain);
+                                        Toast.makeText(this, "已清除 " + domain + " 的 Cookie", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                        })
+                        .setNeutralButton("清除全部", (d, w) -> {
+                            new AlertDialog.Builder(this)
+                                    .setTitle("确认")
+                                    .setMessage("确定要清除所有 Cookie 吗？")
+                                    .setPositiveButton("确定", (di, wi) -> {
+                                        siteCookieManager.clearAllCookies();
+                                        Toast.makeText(this, "所有 Cookie 已清除", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                        })
+                        .setNegativeButton("关闭", null)
+                        .show();
+            }
+        });
+
+        // 站点权限管理
+        btnPermissionCenter.setOnClickListener(v -> {
+            java.util.List<com.edge.browser.security.PermissionCenter.SitePermission> sitePerms = permissionCenter.getAllPermissions();
+            // Flatten into individual permission entries
+            java.util.List<String[]> permList = new java.util.ArrayList<>();
+            for (com.edge.browser.security.PermissionCenter.SitePermission sp : sitePerms) {
+                permList.add(new String[]{sp.domain, "camera", String.valueOf(sp.camera)});
+                permList.add(new String[]{sp.domain, "microphone", String.valueOf(sp.microphone)});
+                permList.add(new String[]{sp.domain, "location", String.valueOf(sp.location)});
+                permList.add(new String[]{sp.domain, "notifications", String.valueOf(sp.notifications)});
+            }
+            if (permList.isEmpty()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("站点权限管理")
+                        .setMessage("暂无站点权限设置")
+                        .setPositiveButton("确定", null)
+                        .show();
+            } else {
+                String[] permNames = new String[permList.size()];
+                for (int i = 0; i < permList.size(); i++) {
+                    String[] p = permList.get(i);
+                    permNames[i] = p[0] + " (" + p[1] + ": " + ("true".equals(p[2]) ? "已允许" : "已拒绝") + ")";
+                }
+                new AlertDialog.Builder(this)
+                        .setTitle("站点权限管理")
+                        .setItems(permNames, (d, which) -> {
+                            String[] p = permList.get(which);
+                            new AlertDialog.Builder(this)
+                                    .setTitle(p[0])
+                                    .setMessage("权限: " + p[1] + "\n状态: " + ("true".equals(p[2]) ? "已允许" : "已拒绝"))
+                                    .setPositiveButton("撤销权限", (di, w) -> {
+                                        permissionCenter.setPermission(p[0], p[1], false);
+                                        Toast.makeText(this, "已撤销 " + p[0] + " 的权限", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                        })
+                        .setNeutralButton("撤销全部", (d, w) -> {
+                            new AlertDialog.Builder(this)
+                                    .setTitle("确认")
+                                    .setMessage("确定要撤销所有站点权限吗？")
+                                    .setPositiveButton("确定", (di, wi) -> {
+                                        permissionCenter.resetAllPermissions();
+                                        Toast.makeText(this, "所有站点权限已撤销", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("取消", null)
+                                    .show();
+                        })
+                        .setNegativeButton("关闭", null)
+                        .show();
+            }
+        });
+
+        // 退出时清除数据
+        ClearOnExitManager clearOnExitManager = ClearOnExitManager.getInstance(this);
+        clearOnExitSwitch.setChecked(clearOnExitManager.isEnabled());
+        clearOnExitSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            clearOnExitManager.setEnabled(isChecked);
+            if (isChecked) {
+                new AlertDialog.Builder(this)
+                        .setTitle("退出时清除数据")
+                        .setMultiChoiceItems(
+                                new String[]{"历史记录", "Cookie", "缓存", "密码"},
+                                new boolean[]{
+                                        clearOnExitManager.isClearHistory(),
+                                        clearOnExitManager.isClearCookies(),
+                                        clearOnExitManager.isClearCache(),
+                                        clearOnExitManager.isClearPasswords()
+                                },
+                                (dialog, which, isChecked2) -> {
+                                    switch (which) {
+                                        case 0: clearOnExitManager.setClearHistory(isChecked2); break;
+                                        case 1: clearOnExitManager.setClearCookies(isChecked2); break;
+                                        case 2: clearOnExitManager.setClearCache(isChecked2); break;
+                                        case 3: clearOnExitManager.setClearPasswords(isChecked2); break;
+                                    }
+                                })
+                        .setPositiveButton("确定", (d, which) -> {
+                            Toast.makeText(this, "退出时清除数据偏好已保存", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+            } else {
+                Toast.makeText(this, "退出时清除数据已关闭", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // 数据同步
+        btnDataSync.setOnClickListener(v -> {
+            startActivity(new Intent(this, SyncActivity.class));
         });
     }
 

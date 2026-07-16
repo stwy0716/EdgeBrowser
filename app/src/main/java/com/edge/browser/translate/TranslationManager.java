@@ -10,7 +10,7 @@ public class TranslationManager {
     private static TranslationManager instance;
     private String targetLang = DEFAULT_LANG;
 
-    private TranslationManager() {}
+    protected TranslationManager() {}
 
     public static synchronized TranslationManager getInstance() {
         if (instance == null) instance = new TranslationManager();

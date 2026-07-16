@@ -11,6 +11,7 @@ public class EdgeApplication extends MultiDexApplication {
 
     private static final String TAG = "EdgeApplication";
     private static EdgeApplication instance;
+    private static MainActivity mainActivity;
 
     @Override
     public void onCreate() {
@@ -41,5 +42,13 @@ public class EdgeApplication extends MultiDexApplication {
 
     public static EdgeApplication getInstance() {
         return instance;
+    }
+
+    public static void setMainActivity(MainActivity activity) {
+        mainActivity = activity;
+    }
+
+    public static MainActivity getMainActivity() {
+        return mainActivity;
     }
 }

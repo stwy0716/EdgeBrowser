@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#0078D4"
+        android:elevation="4dp"
+        app:title="开发者工具"
+        app:titleTextColor="#FFFFFF"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="#FFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Page Source Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="页面源代码"
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <Button
+                android:id="@+id/btn_view_source"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="查看页面源代码"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp" />
+
+            <ScrollView
+                android:id="@+id/source_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#FFFFFF"
+                android:padding="8dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tv_page_source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#212121"
+                    android:fontFamily="monospace"
+                    android:text="点击查看源代码按钮获取页面源码" />
+            </ScrollView>
+
+            <!-- Console Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="控制台输出"
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <Button
+                    android:id="@+id/btn_capture_console"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="注入控制台"
+                    android:backgroundTint="#0078D4"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="4dp" />
+
+                <Button
+                    android:id="@+id/btn_refresh_console"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="刷新输出"
+                    android:backgroundTint="#10893E"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="4dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_clear_console"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="清除控制台"
+                android:backgroundTint="#E81123"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp" />
+
+            <ScrollView
+                android:id="@+id/console_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#1E1E1E"
+                android:padding="8dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tv_console_output"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#D4D4D4"
+                    android:fontFamily="monospace"
+                    android:text="控制台输出将显示在这里" />
+            </ScrollView>
+
+            <!-- User Agent Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="User Agent 切换"
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_current_ua"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#666666"
+                android:paddingBottom="8dp"
+                android:text="当前UA: 未获取" />
+
+            <Button
+                android:id="@+id/btn_ua_android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Android (默认)"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_ua_desktop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Desktop (Windows)"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_ua_macos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Desktop (macOS)"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_ua_iphone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="iPhone"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_ua_ipad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="iPad"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_ua_custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="自定义UA..."
+                android:backgroundTint="#FF8C00"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Resource Info Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="资源信息"
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:paddingBottom="8dp" />
+
+            <Button
+                android:id="@+id/btn_resource_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="获取资源信息"
+                android:backgroundTint="#0078D4"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_resource_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="#212121"
+                android:fontFamily="monospace"
+                android:background="#FFFFFF"
+                android:padding="12dp"
+                android:text="点击获取资源信息" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

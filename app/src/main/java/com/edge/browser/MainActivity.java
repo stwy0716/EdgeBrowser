@@ -52,6 +52,9 @@ import com.edge.browser.notification.WebNotificationManager;
 import com.edge.browser.password.PasswordManager;
 import com.edge.browser.performance.PerformanceManager;
 import com.edge.browser.performance.TaskManager;
+import com.edge.browser.privacy.BiometricLockManager;
+import com.edge.browser.privacy.CertificateViewerActivity;
+import com.edge.browser.privacy.ClearOnExitManager;
 import com.edge.browser.privacy.PrivacyManager;
 import com.edge.browser.quicklinks.QuickLinkManager;
 import com.edge.browser.reader.ReadAloudManager;
@@ -82,6 +85,33 @@ import com.edge.browser.webview.GeckoWebView;
 import com.edge.browser.webview.IBrowserView;
 
 import java.io.File;
+import com.edge.browser.privacy.BiometricLockManager;
+import com.edge.browser.privacy.ClearOnExitManager;
+import com.edge.browser.ai.AISearchManager;
+import com.edge.browser.ai.AISummaryManager;
+import com.edge.browser.ai.SmartTabManager;
+import com.edge.browser.autofill.AutofillManager;
+import com.edge.browser.content.DataSaverManager;
+import com.edge.browser.content.InlineTranslationManager;
+import com.edge.browser.content.OfflinePageManager;
+import com.edge.browser.content.RssReaderManager;
+import com.edge.browser.content.TextScaleManager;
+import com.edge.browser.devtools.DevToolsActivity;
+import com.edge.browser.pdf.PdfViewerActivity;
+import com.edge.browser.screenshot.FullPageScreenshotManager;
+import com.edge.browser.security.AntiFingerprintManager;
+import com.edge.browser.security.DoNotTrackManager;
+import com.edge.browser.security.DohManager;
+import com.edge.browser.security.HttpsOnlyMode;
+import com.edge.browser.security.PermissionCenter;
+import com.edge.browser.security.SiteCookieManager;
+import com.edge.browser.sync.SyncActivity;
+import com.edge.browser.sync.SyncManager;
+import com.edge.browser.ui.LinkPreviewManager;
+import com.edge.browser.ui.SplitScreenManager;
+import com.edge.browser.ui.TabGroupCollapseManager;
+import com.edge.browser.ui.ToolbarCustomizer;
+import com.edge.browser.ui.VoiceSearchManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +176,30 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private QuickLinkManager quickLinkManager;
     private StartupConfigManager startupConfigManager;
     private WebNotificationManager webNotificationManager;
+    private HttpsOnlyMode httpsOnlyMode;
+    private DohManager dohManager;
+    private DoNotTrackManager dntManager;
+    private AntiFingerprintManager antiFingerprintManager;
+    private SiteCookieManager siteCookieManager;
+    private PermissionCenter permissionCenter;
+    private BiometricLockManager biometricLockManager;
+    private ClearOnExitManager clearOnExitManager;
+    private SyncManager syncManager;
+    private AutofillManager autofillManager;
+    private DataSaverManager dataSaverManager;
+    private TextScaleManager textScaleManager;
+    private OfflinePageManager offlinePageManager;
+    private VoiceSearchManager voiceSearchManager;
+    private LinkPreviewManager linkPreviewManager;
+    private TabGroupCollapseManager tabGroupCollapseManager;
+    private ToolbarCustomizer toolbarCustomizer;
+    private SplitScreenManager splitScreenManager;
+    private RssReaderManager rssReaderManager;
+    private InlineTranslationManager inlineTranslationManager;
+    private AISummaryManager aiSummaryManager;
+    private SmartTabManager smartTabManager;
+    private AISearchManager aiSearchManager;
+    private boolean wasInBackground = false;
 
     // Adapters
     private TabPagerAdapter pagerAdapter;
@@ -234,6 +288,29 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             startupConfigManager = StartupConfigManager.getInstance(this);
             webNotificationManager = WebNotificationManager.getInstance();
             webNotificationManager.init(this);
+            httpsOnlyMode = HttpsOnlyMode.getInstance(this);
+            httpsOnlyMode.loadState(db);
+            dohManager = DohManager.getInstance(this);
+            dohManager.loadState(db);
+            dntManager = DoNotTrackManager.getInstance(this);
+            dntManager.loadState(db);
+            antiFingerprintManager = AntiFingerprintManager.getInstance(this);
+            antiFingerprintManager.loadState(db);
+            siteCookieManager = SiteCookieManager.getInstance(this);
+            siteCookieManager.loadState(db);
+            permissionCenter = PermissionCenter.getInstance(this);
+            dataSaverManager = DataSaverManager.getInstance(this);
+            dataSaverManager.loadState();
+            textScaleManager = TextScaleManager.getInstance(this);
+            biometricLockManager = BiometricLockManager.getInstance(this);
+            clearOnExitManager = ClearOnExitManager.getInstance(this);
+            voiceSearchManager = VoiceSearchManager.getInstance();
+            linkPreviewManager = new LinkPreviewManager();
+            tabGroupCollapseManager = TabGroupCollapseManager.getInstance(this);
+            tabGroupCollapseManager.syncWithTabGroupManager();
+            toolbarCustomizer = ToolbarCustomizer.getInstance(this);
+            splitScreenManager = SplitScreenManager.getInstance();
+            // siteCookieManager is already loaded via loadState()
         } catch (Exception e) {
             BrowserLogger.getInstance().logCrash("initManagers", e);
         }
@@ -263,6 +340,8 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         findPrev = findBar.findViewById(R.id.find_prev);
         findNext = findBar.findViewById(R.id.find_next);
         findClose = findBar.findViewById(R.id.find_close);
+
+        applyToolbarCustomization();
     }
 
     // === Tab 状态恢复 ===
@@ -570,7 +649,16 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                     navigateTo(url);
                 }
                 @Override public void onVoiceSearch() {
-                    Toast.makeText(MainActivity.this, "语音搜索功能开发中", Toast.LENGTH_SHORT).show();
+                    voiceSearchManager.startVoiceSearch(MainActivity.this, new VoiceSearchManager.VoiceCallback() {
+                        @Override
+                        public void onResult(String query) {
+                            runOnUiThread(() -> navigateTo(query));
+                        }
+                        @Override
+                        public void onError(String error) {
+                            runOnUiThread(() -> Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show());
+                        }
+                    });
                 }
             });
         }
@@ -653,10 +741,12 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                             "在新标签页中打开",
                             "复制链接地址",
                             "分享",
+                            "预览链接",
                             "翻译此页面",
                             "在页面中查找",
                             "扫描二维码",
-                            "添加书签"
+                            "添加书签",
+                            "保存离线"
                     }, (dialog, which) -> {
                         switch (which) {
                             case 0: // 新标签页打开
@@ -673,19 +763,71 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                                 share.putExtra(Intent.EXTRA_TEXT, copyUrl);
                                 startActivity(Intent.createChooser(share, "分享"));
                                 break;
-                            case 3: // 翻译
+                            case 3: // 预览链接
+                                if (finalHitUrl != null) {
+                                    linkPreviewManager.showLinkPreview(MainActivity.this, ewv, finalHitUrl,
+                                            new LinkPreviewManager.LinkPreviewCallback() {
+                                                @Override
+                                                public void onOpen() {
+                                                    navigateTo(finalHitUrl);
+                                                }
+                                                @Override
+                                                public void onOpenInNewTab() {
+                                                    newTab(finalHitUrl);
+                                                }
+                                                @Override
+                                                public void onCopyLink() {
+                                                    ClipboardManager cpm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                                    cpm.setPrimaryClip(ClipData.newPlainText("URL", finalHitUrl));
+                                                    Toast.makeText(MainActivity.this, "已复制", Toast.LENGTH_SHORT).show();
+                                                }
+                                                @Override
+                                                public void onShare() {
+                                                    Intent si = new Intent(Intent.ACTION_SEND);
+                                                    si.setType("text/plain");
+                                                    si.putExtra(Intent.EXTRA_TEXT, finalHitUrl);
+                                                    startActivity(Intent.createChooser(si, "分享"));
+                                                }
+                                            });
+                                }
+                                break;
+                            case 4: // 翻译
                                 String transUrl = translationManager.getTranslateUrl(pageUrl);
                                 navigateTo(transUrl);
                                 break;
-                            case 4: // 查找
+                            case 5: // 查找
                                 showFindBar();
                                 break;
-                            case 5: // 扫描二维码
+                            case 6: // 扫描二维码
                                 startActivity(new Intent(this, com.edge.browser.qr.QRScannerActivity.class));
                                 break;
-                            case 6: // 添加书签
+                            case 7: // 添加书签
                                 bookmarkManager.addBookmark(ewv.getTitle(), pageUrl);
                                 Toast.makeText(this, "已添加书签", Toast.LENGTH_SHORT).show();
+                                break;
+                            case 8: // 保存离线
+                                String pageTitle = ewv.getTitle();
+                                String pageUrlForSave = pageUrl;
+                                if (finalHitUrl != null) {
+                                    pageUrlForSave = finalHitUrl;
+                                    pageTitle = finalHitUrl;
+                                }
+                                final String finalTitle = pageTitle;
+                                final String finalUrl = pageUrlForSave;
+                                ewv.evaluateJavascript("(function() { return document.documentElement.outerHTML; })();",
+                                        html -> {
+                                            if (html != null && !html.isEmpty()) {
+                                                String content = html;
+                                                if (content.startsWith("\"") && content.endsWith("\"")) {
+                                                    content = content.substring(1, content.length() - 1);
+                                                }
+                                                content = content.replace("\\\"", "\"").replace("\\n", "\n").replace("\\t", "\t");
+                                                OfflinePageManager.getInstance(MainActivity.this)
+                                                        .savePageForOffline(finalUrl, content, finalTitle);
+                                                runOnUiThread(() -> Toast.makeText(MainActivity.this,
+                                                        "已保存离线页面", Toast.LENGTH_SHORT).show());
+                                            }
+                                        });
                                 break;
                         }
                     })
@@ -791,7 +933,15 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         }
     }
 
-    private IBrowserView getCurrentWebView() {
+    private void applyToolbarCustomization() {
+        if (toolbarCustomizer == null) return;
+        findViewById(R.id.btn_back).setVisibility(toolbarCustomizer.isButtonVisible("back") ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btn_forward).setVisibility(toolbarCustomizer.isButtonVisible("forward") ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btn_home).setVisibility(toolbarCustomizer.isButtonVisible("home") ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btn_tabs_container).setVisibility(toolbarCustomizer.isButtonVisible("tabs") ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btn_menu).setVisibility(toolbarCustomizer.isButtonVisible("menu") ? View.VISIBLE : View.GONE);
+    }
+    public IBrowserView getCurrentWebView() {
         int pos = viewPager.getCurrentItem();
         TabItem tab = tabManager.getTabAt(pos);
         if (tab != null) {
@@ -844,6 +994,40 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 () -> startActivity(new Intent(this, PerformanceActivity.class))));
         menuItems.add(new MenuItem("任务", R.drawable.ic_more_vertical,
                 () -> startActivity(new Intent(this, TaskManagerActivity.class))));
+        menuItems.add(new MenuItem("语音搜索", R.drawable.ic_edge_search, () -> {
+            voiceSearchManager.startVoiceSearch(MainActivity.this, new VoiceSearchManager.VoiceCallback() {
+                @Override
+                public void onResult(String query) {
+                    runOnUiThread(() -> navigateTo(query));
+                }
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, error, Toast.LENGTH_SHORT).show());
+                }
+            });
+        }));
+        menuItems.add(new MenuItem("标签分组", R.drawable.ic_tabs, () -> {
+            List<TabGroupManager.TabGroup> groups = tabGroupManager.getAllGroups();
+            if (groups.isEmpty()) {
+                Toast.makeText(MainActivity.this, "没有标签分组", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String[] groupNames = new String[groups.size()];
+            for (int i = 0; i < groups.size(); i++) {
+                TabGroupManager.TabGroup g = groups.get(i);
+                groupNames[i] = g.getName() + (g.isCollapsed() ? " (已折叠)" : " (展开)");
+            }
+            new AlertDialog.Builder(MainActivity.this)
+                .setTitle("切换分组折叠")
+                .setItems(groupNames, (d, i) -> {
+                    TabGroupManager.TabGroup g = groups.get(i);
+                    tabGroupCollapseManager.toggleGroup(g.getId());
+                    String status = tabGroupCollapseManager.isGroupCollapsed(g.getId()) ? "已折叠" : "已展开";
+                    Toast.makeText(MainActivity.this, g.getName() + " " + status, Toast.LENGTH_SHORT).show();
+                    updateTabCount();
+                })
+                .show();
+        }));
         menuItems.add(new MenuItem("设置", R.drawable.ic_edge_home,
                 () -> startActivity(new Intent(this, SettingsActivity.class))));
         menuItems.add(new MenuItem("日志", R.drawable.ic_edge_search, this::showLogViewer));
@@ -926,6 +1110,22 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
                 ewv.reload();
                 Toast.makeText(this, "已切换到桌面版", Toast.LENGTH_SHORT).show();
+            }
+        }));
+
+        menuItems.add(new MenuItem("应用锁", R.drawable.ic_edge_lock, () -> {
+            biometricLockManager.setLockEnabled(!biometricLockManager.isLockEnabled());
+            Toast.makeText(this, biometricLockManager.isLockEnabled() ? "应用锁已开启" : "应用锁已关闭", Toast.LENGTH_SHORT).show();
+        }));
+        menuItems.add(new MenuItem("证书信息", R.drawable.ic_edge_lock, () -> {
+            IBrowserView wv = getCurrentWebView();
+            if (wv != null) {
+                String url = wv.getUrl();
+                if (url != null && !url.isEmpty()) {
+                    CertificateViewerActivity.showCertificate(MainActivity.this, url);
+                } else {
+                    Toast.makeText(MainActivity.this, "当前页面无有效URL", Toast.LENGTH_SHORT).show();
+                }
             }
         }));
 
@@ -1080,6 +1280,18 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     @Override
     protected void onResume() {
         super.onResume();
+        if (biometricLockManager != null && biometricLockManager.isLockEnabled() && wasInBackground) {
+            wasInBackground = false;
+            biometricLockManager.authenticate(this, new BiometricLockManager.BiometricCallback() {
+                @Override public void onSuccess() {}
+                @Override public void onFailed() {
+                    Toast.makeText(MainActivity.this, "生物识别验证失败", Toast.LENGTH_SHORT).show();
+                }
+                @Override public void onError(String error) {
+                    Toast.makeText(MainActivity.this, "生物识别错误: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
         IBrowserView wv = getCurrentWebView();
         if (wv != null) wv.onResume();
     }
@@ -1087,12 +1299,16 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     @Override
     protected void onPause() {
         super.onPause();
+        wasInBackground = true;
         IBrowserView wv = getCurrentWebView();
         if (wv != null) wv.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        if (clearOnExitManager != null) {
+            clearOnExitManager.executeClear(MainActivity.this);
+        }
         if (gestureController != null) gestureController.detach();
         super.onDestroy();
         for (IBrowserView wv : webViewCache.values()) {
