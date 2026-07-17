@@ -6,14 +6,13 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!-- 主内容区域 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="?android:colorBackground">
 
-        <!-- 顶部工具栏区域 -->
+        <!-- Top Toolbar Area -->
         <LinearLayout
             android:id="@+id/top_toolbar"
             android:layout_width="match_parent"
@@ -23,17 +22,16 @@
             android:paddingHorizontal="12dp"
             android:background="?android:colorBackground">
 
-            <!-- 地址栏 (顶部 药丸形状) -->
+            <!-- Address Bar (Pill Shape) -->
             <LinearLayout
                 android:id="@+id/url_bar_container"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="4dp"
+                android:layout_height="46dp"
+                android:layout_marginBottom="6dp"
                 android:background="@drawable/url_bar_bg"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:elevation="1dp">
+                android:paddingHorizontal="14dp">
 
                 <ImageView
                     android:id="@+id/url_lock_icon"
@@ -65,7 +63,7 @@
                     android:layout_height="32dp"
                     android:src="@drawable/ic_edge_share"
                     android:contentDescription="分享"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:background="?attr/selectableItemBackgroundBorderless" />
 
                 <ImageView
@@ -74,12 +72,12 @@
                     android:layout_height="32dp"
                     android:src="@drawable/ic_refresh"
                     android:contentDescription="刷新"
-                    android:padding="4dp"
+                    android:padding="5dp"
                     android:background="?attr/selectableItemBackgroundBorderless" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 网页内容区域 -->
+        <!-- Content Area -->
         <FrameLayout
             android:id="@+id/content_area"
             android:layout_width="match_parent"
@@ -99,18 +97,18 @@
                 android:layout_gravity="top"
                 android:background="@android:color/transparent"
                 android:max="100"
-                android:indeterminateOnly="false"
+                android:indeterminate="false"
                 android:progressTint="@color/md_primary"
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- 页面内查找栏 -->
+        <!-- Find in Page Bar -->
         <include
             android:id="@+id/find_bar"
             layout="@layout/find_in_page_bar"
             android:visibility="gone" />
 
-        <!-- 底部导航栏 (Material 3 扁平化) -->
+        <!-- Bottom Navigation Bar (Edge 2026 Style) -->
         <LinearLayout
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
@@ -118,54 +116,47 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/bottom_nav_bg"
-            android:elevation="8dp"
-            android:paddingHorizontal="8dp"
-            android:outlineProvider="none">
+            android:elevation="2dp"
+            android:outlineProvider="none"
+            android:paddingHorizontal="4dp">
 
             <ImageView
                 android:id="@+id/btn_back"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_arrow_back"
                 android:contentDescription="后退"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:alpha="0.4" />
+                android:alpha="0.35" />
 
             <ImageView
                 android:id="@+id/btn_forward"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_arrow_forward"
                 android:contentDescription="前进"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:alpha="0.4" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:alpha="0.35" />
 
             <ImageView
                 android:id="@+id/btn_home"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_edge_home"
                 android:contentDescription="主页"
                 android:padding="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <!-- 标签页按钮 -->
             <FrameLayout
                 android:id="@+id/btn_tabs_container"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless">
                 <ImageView
                     android:layout_width="24dp"
@@ -175,23 +166,25 @@
                     android:contentDescription="标签页" />
                 <TextView
                     android:id="@+id/tab_count_text"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="2dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="3dp"
                     android:background="@drawable/badge_bg"
                     android:gravity="center"
                     android:text="1"
                     android:textColor="@android:color/white"
-                    android:textSize="9sp"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
                     android:visibility="gone" />
             </FrameLayout>
 
             <ImageView
                 android:id="@+id/btn_menu"
-                android:layout_width="40dp"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:src="@drawable/ic_more_vertical"
                 android:contentDescription="菜单"
                 android:padding="8dp"
@@ -199,25 +192,25 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 标签页右侧面板 (卡片式) -->
+    <!-- Tab Drawer (Right Panel) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/tabs_drawer"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         app:cardCornerRadius="0dp"
-        app:cardElevation="16dp"
-        app:cardBackgroundColor="?android:colorBackground"
-        android:stateListAnimator="@null">
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="?android:colorBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="56dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp">
@@ -237,8 +230,15 @@
                     android:layout_height="wrap_content"
                     android:text="1 个标签页"
                     android:textColor="?android:textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginHorizontal="16dp"
+                android:background="?attr/colorOutline" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tabs_recycler"
@@ -250,12 +250,13 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
+                android:layout_marginHorizontal="16dp"
                 android:background="?attr/colorOutline" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp">
@@ -266,12 +267,13 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="InPrivate 标签页"
+                    android:text="InPrivate"
                     android:textColor="@color/md_primary"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-medium"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
 
                 <TextView
                     android:id="@+id/btn_close_all"
@@ -284,7 +286,8 @@
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-medium"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

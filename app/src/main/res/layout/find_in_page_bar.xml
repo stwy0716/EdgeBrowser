@@ -6,17 +6,7 @@
     android:gravity="center_vertical"
     android:background="?android:colorBackground"
     android:elevation="2dp"
-    android:paddingHorizontal="8dp"
-    android:visibility="gone">
-
-    <ImageView
-        android:id="@+id/find_prev"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_arrow_back"
-        android:contentDescription="上一个"
-        android:padding="6dp"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+    android:paddingHorizontal="8dp">
 
     <EditText
         android:id="@+id/find_input"
@@ -25,11 +15,13 @@
         android:layout_weight="1"
         android:layout_marginHorizontal="4dp"
         android:background="@drawable/url_bar_bg"
-        android:hint="在页面中查找..."
+        android:hint="在页面中查找"
         android:inputType="text"
         android:maxLines="1"
         android:paddingHorizontal="12dp"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textColor="?android:textColorPrimary"
+        android:textColorHint="?android:textColorSecondary" />
 
     <TextView
         android:id="@+id/find_count"
@@ -41,20 +33,29 @@
         android:textSize="12sp" />
 
     <ImageView
+        android:id="@+id/find_prev"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_arrow_up"
+        android:contentDescription="上一个"
+        android:padding="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <ImageView
         android:id="@+id/find_next"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_arrow_forward"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_arrow_down"
         android:contentDescription="下一个"
-        android:padding="6dp"
+        android:padding="4dp"
         android:background="?attr/selectableItemBackgroundBorderless" />
 
     <ImageView
         android:id="@+id/find_close"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/ic_close"
         android:contentDescription="关闭"
-        android:padding="6dp"
+        android:padding="4dp"
         android:background="?attr/selectableItemBackgroundBorderless" />
 </LinearLayout>

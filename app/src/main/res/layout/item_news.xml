@@ -7,52 +7,51 @@
     android:layout_marginVertical="4dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="?android:colorBackground"
-    app:strokeWidth="1dp"
-    app:strokeColor="?attr/colorOutline">
+    app:strokeWidth="0.5dp"
+    app:strokeColor="?attr/colorOutline"
+    app:cardBackgroundColor="?android:colorBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="14dp">
-
-        <TextView
-            android:id="@+id/news_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:text="新闻标题"
-            android:textColor="?android:textColorPrimary"
-            android:textSize="14sp"
-            android:fontFamily="sans-serif"
-            android:lineSpacingExtra="2dp"
-            android:ellipsize="end" />
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingEnd="12dp">
+
+            <TextView
+                android:id="@+id/news_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="新闻标题"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/news_source"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_marginTop="4dp"
                 android:text="来源"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif" />
-
-            <TextView
-                android:id="@+id/news_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="刚刚"
-                android:textColor="?android:textColorSecondary"
-                android:textSize="11sp"
-                android:fontFamily="sans-serif" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/news_image"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="图片"
+            android:background="@color/md_surface_variant" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

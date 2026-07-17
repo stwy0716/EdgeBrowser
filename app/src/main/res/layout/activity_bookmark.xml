@@ -12,14 +12,14 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?android:colorBackground"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="收藏夹"
+        app:title="书签"
         app:titleTextColor="?android:textColorPrimary"
-        app:titleCentered="false" />
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bookmark_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp" />
+        android:paddingVertical="6dp" />
 </LinearLayout>

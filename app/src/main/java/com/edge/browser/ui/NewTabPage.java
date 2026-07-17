@@ -243,7 +243,6 @@ public class NewTabPage {
             NewsItem item = items.get(position);
             holder.title.setText(item.title);
             holder.source.setText(item.source);
-            holder.time.setText(item.time);
             holder.itemView.setOnClickListener(v -> {
                 // 搜索新闻标题
                 if (callback != null) {
@@ -259,13 +258,12 @@ public class NewTabPage {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            TextView title, source, time;
+            TextView title, source;
 
             ViewHolder(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.news_title);
                 source = itemView.findViewById(R.id.news_source);
-                time = itemView.findViewById(R.id.news_time);
             }
         }
     }

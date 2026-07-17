@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Edge Button Style -->
+    <style name="EdgeButton" parent="Widget.Material3.Button">
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:minHeight">44dp</item>
+    </style>
+
+    <style name="EdgeButton.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="EdgeButton.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- Edge Dialog -->
+    <style name="EdgeDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearance">@style/ShapeAppearance.EdgeLarge</item>
+        <item name="dialogCornerRadius">28dp</item>
+        <item name="android:backgroundDimAmount">0.4</item>
+    </style>
+
+    <!-- Edge Text Input -->
+    <style name="EdgeTextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+    </style>
+
+    <!-- Edge Tab Layout -->
+    <style name="EdgeTabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabIndicatorColor">@color/md_primary</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabIndicatorAnimationMode">elastic</item>
+        <item name="tabTextAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+    </style>
+</resources>

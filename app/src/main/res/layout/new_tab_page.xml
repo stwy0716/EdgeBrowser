@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:paddingTop="56dp">
+        android:paddingTop="48dp">
 
-        <!-- Logo -->
+        <!-- Logo Area -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="极速浏览器"
             android:textColor="?android:textColorPrimary"
-            android:textSize="28sp"
+            android:textSize="30sp"
             android:fontFamily="sans-serif-medium"
-            android:layout_marginBottom="24dp"
-            android:letterSpacing="0.02" />
-
-        <!-- 搜索栏 (带渐变边框) -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="28dp"
-            android:background="@drawable/search_bar_bg"
-            android:elevation="2dp">
+            android:letterSpacing="0.03" />
+
+        <!-- Search Bar (Card with subtle shadow) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="25dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="0.5dp"
+            app:strokeColor="?attr/colorOutline"
+            app:cardBackgroundColor="?android:colorBackground">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,6 +48,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_edge_search"
+                    android:alpha="0.5"
                     android:contentDescription="搜索" />
 
                 <EditText
@@ -67,19 +73,20 @@
                     android:src="@drawable/ic_edge_voice"
                     android:contentDescription="语音搜索"
                     android:padding="2dp"
+                    android:alpha="0.5"
                     android:background="?attr/selectableItemBackgroundBorderless" />
             </LinearLayout>
-        </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- 快捷站点卡片 -->
+        <!-- Quick Links Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginBottom="10dp"
             android:text="常用站点"
             android:textColor="?android:textColorPrimary"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-medium" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -87,26 +94,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="16dp"
             android:nestedScrollingEnabled="false" />
 
-        <!-- 分隔线 -->
+        <!-- Divider -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_marginHorizontal="24dp"
             android:background="?attr/colorOutline" />
 
-        <!-- 资讯 -->
+        <!-- News Feed Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="10dp"
             android:text="我的资讯"
             android:textColor="?android:textColorPrimary"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:fontFamily="sans-serif-medium" />
 
         <androidx.recyclerview.widget.RecyclerView

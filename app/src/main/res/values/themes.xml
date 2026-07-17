@@ -1,56 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.EdgeBrowser" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary -->
         <item name="colorPrimary">@color/md_primary</item>
         <item name="colorOnPrimary">@color/md_on_primary</item>
         <item name="colorPrimaryContainer">@color/md_primary_container</item>
         <item name="colorOnPrimaryContainer">@color/md_on_primary_container</item>
-        <!-- Secondary -->
         <item name="colorSecondary">@color/md_secondary</item>
         <item name="colorSecondaryContainer">@color/md_secondary_container</item>
-        <!-- Tertiary -->
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container</item>
         <item name="colorTertiary">@color/md_tertiary</item>
         <item name="colorTertiaryContainer">@color/md_tertiary_container</item>
-        <!-- Error -->
         <item name="colorError">@color/md_error</item>
         <item name="colorErrorContainer">@color/md_error_container</item>
-        <!-- Surface -->
         <item name="colorSurface">@color/md_surface</item>
         <item name="colorOnSurface">@color/md_on_background</item>
         <item name="colorSurfaceVariant">@color/md_surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/md_secondary</item>
-        <!-- Background -->
         <item name="android:colorBackground">@color/md_background</item>
         <item name="colorOnBackground">@color/md_on_background</item>
-        <!-- Outline -->
         <item name="colorOutline">@color/md_outline</item>
         <item name="colorOutlineVariant">@color/md_outline_variant</item>
-        <!-- Status/Nav -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/md_surface_container</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowBackground">@color/md_background</item>
-        <!-- Shape -->
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Small</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Medium</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Large</item>
-        <!-- Bottom Sheet -->
-        <item name="bottomSheetStyle">@style/Widget.Material3.BottomSheet.Modal</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/fade</item>
+        <item name="android:windowExitTransition">@android:transition/fade</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.EdgeSmall</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.EdgeMedium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.EdgeLarge</item>
+        <item name="bottomSheetStyle">@style/EdgeBottomSheet</item>
+        <item name="materialCardViewStyle">@style/EdgeCardView</item>
+        <item name="android:listDivider">@drawable/divider_inset</item>
     </style>
 
-    <style name="ShapeAppearance.Small" parent="ShapeAppearance.Material3.SmallComponent">
+    <!-- Edge Shape System -->
+    <style name="ShapeAppearance.EdgeSmall" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
+        <item name="cornerSize">12dp</item>
     </style>
-    <style name="ShapeAppearance.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+    <style name="ShapeAppearance.EdgeMedium" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">20dp</item>
     </style>
-    <style name="ShapeAppearance.Large" parent="ShapeAppearance.Material3.LargeComponent">
+    <style name="ShapeAppearance.EdgeLarge" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">24dp</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <!-- Edge Bottom Sheet -->
+    <style name="EdgeBottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearance">@style/ShapeAppearance.EdgeLarge</item>
+        <item name="backgroundTint">@color/md_surface_container</item>
+        <item name="behavior_draggable">true</item>
+    </style>
+
+    <!-- Edge Card View -->
+    <style name="EdgeCardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@color/md_surface_container</item>
+        <item name="strokeWidth">0dp</item>
     </style>
 
     <!-- Edge Address Bar -->
@@ -68,7 +81,7 @@
 
     <style name="Theme.EdgeBrowser.InPrivate" parent="Theme.EdgeBrowser">
         <item name="colorPrimary">@color/incognito_accent</item>
-        <item name="android:statusBarColor">#1F1F1F</item>
+        <item name="android:statusBarColor">#1B1B1F</item>
         <item name="android:windowBackground">@color/incognito_bg</item>
     </style>
 

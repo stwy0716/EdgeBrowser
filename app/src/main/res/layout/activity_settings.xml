@@ -1,659 +1,486 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="?android:colorBackground">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?android:colorBackground"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="设置"
+        app:titleTextColor="?android:textColorPrimary"
+        app:titleCentered="false"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?android:colorBackground"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="设置"
-            app:titleTextColor="?android:textColorPrimary"
-            app:titleCentered="false" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="32dp">
 
         <LinearLayout
+            android:id="@+id/settings_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="32dp">
+            android:orientation="vertical">
 
-            <!-- 搜索引擎 -->
-            <TextView
+            <!-- ====== 常规设置 ====== -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="搜索引擎"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
-
-                <RadioGroup
-                    android:id="@+id/search_engine_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 浏览器内核 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="浏览器内核"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
+                app:cardBackgroundColor="?android:colorBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/btn_search_engine"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="搜索引擎"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:paddingVertical="12dp" />
+
+                    <RadioGroup
+                        android:id="@+id/search_engine_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="?attr/colorOutline"
+                        android:layout_marginVertical="8dp" />
+
+                    <TextView
+                        android:id="@+id/btn_engine"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="内核"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:paddingVertical="12dp" />
 
                     <RadioGroup
                         android:id="@+id/engine_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="12dp" />
+                        android:orientation="vertical" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="?attr/colorOutline"
+                        android:layout_marginVertical="8dp" />
 
                     <TextView
+                        android:id="@+id/btn_theme"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="16dp"
-                        android:paddingBottom="12dp"
-                        android:text="切换内核后需重启应用生效"
-                        android:textColor="@color/md_error"
-                        android:textSize="11sp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:text="主题"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:paddingVertical="12dp" />
 
-            <!-- 外观 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="外观"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
+                    <RadioGroup
+                        android:id="@+id/theme_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="?attr/colorOutline"
+                        android:layout_marginVertical="8dp" />
 
-                <RadioGroup
-                    android:id="@+id/theme_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 启动页 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="启动时"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/btn_startup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="启动页"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:paddingVertical="12dp" />
 
                     <RadioGroup
                         android:id="@+id/startup_group"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="12dp" />
+                        android:orientation="vertical" />
 
                     <EditText
                         android:id="@+id/homepage_url"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginHorizontal="12dp"
-                        android:layout_marginBottom="12dp"
-                        android:hint="输入主页网址"
-                        android:inputType="textUri"
-                        android:paddingHorizontal="12dp"
-                        android:background="@drawable/url_bar_bg"
+                        android:layout_height="wrap_content"
+                        android:hint="自定义主页地址"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="14sp"
+                        android:padding="12dp"
+                        android:background="@android:drawable/edit_text"
                         android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 隐私与功能 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="隐私与功能"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
+            <!-- ====== 隐私与安全 ====== -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
+                app:cardBackgroundColor="?android:colorBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <!-- 广告拦截 -->
+                    <TextView
+                        android:id="@+id/privacy_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="隐私与安全"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:paddingVertical="8dp" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="广告拦截" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="拦截常见广告和追踪器" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="广告拦截"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/ad_block_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- 夜间模式 -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="夜间模式" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="深色背景，保护眼睛" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                        <androidx.appcompat.widget.SwitchCompat
-                            android:id="@+id/night_mode_switch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <TextView
-                        android:id="@+id/btn_privacy_level"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="跟踪保护：平衡"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground" />
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <TextView
-                        android:id="@+id/btn_clear_data"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="清除浏览数据"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 隐私与安全 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="隐私与安全"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- HTTPS Only 模式 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="HTTPS Only 模式" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="自动升级 HTTP 连接到 HTTPS" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="仅 HTTPS"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/https_only_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- DNS over HTTPS -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="DNS over HTTPS" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="加密 DNS 查询，防止 DNS 劫持" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="DNS over HTTPS"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/doh_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- Do Not Track -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Do Not Track" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="请求网站不要追踪您的浏览行为" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="不跟踪 (DNT)"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/dnt_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- 反指纹追踪 -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="反指纹追踪" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="防止浏览器指纹识别和追踪" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="反指纹"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/anti_fingerprint_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- 阻止第三方 Cookie -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="阻止第三方 Cookie" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="阻止跨站跟踪 Cookie" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="第三方 Cookie"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/third_party_cookie_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
 
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <TextView
-                        android:id="@+id/btn_cookie_manager"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="管理 Cookie"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground" />
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <TextView
-                        android:id="@+id/btn_permission_center"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="站点权限管理"
-                        android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground" />
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-
-                    <!-- 退出时清除数据 -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="16dp">
-
-                        <LinearLayout
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="退出时清除数据" android:textColor="?android:textColorPrimary"
-                                android:textSize="15sp" android:fontFamily="sans-serif" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="退出浏览器时自动清除浏览数据" android:textColor="?android:textColorSecondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="退出时清除数据"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/clear_on_exit_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                     </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <!-- 数据管理 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="数据管理"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView android:id="@+id/btn_stats" style="@style/SettingsItem" android:text="查看统计" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-                    <TextView android:id="@+id/btn_passwords" style="@style/SettingsItem" android:text="管理密码" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-                    <TextView android:id="@+id/btn_reading_list" style="@style/SettingsItem" android:text="管理阅读列表" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-                    <TextView android:id="@+id/btn_extensions" style="@style/SettingsItem" android:text="管理扩展" />
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
-                    <TextView android:id="@+id/btn_quick_links" style="@style/SettingsItem" android:text="管理快捷链接" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- 数据同步 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="数据同步"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="?attr/colorOutline"
+                        android:layout_marginVertical="8dp" />
 
                     <TextView
-                        android:id="@+id/btn_data_sync"
+                        android:id="@+id/btn_cookie_manager"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="导出/导入数据"
+                        android:layout_height="wrap_content"
+                        android:text="Cookie 管理"
                         android:textColor="?android:textColorPrimary"
                         android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_permission_center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="权限中心"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_privacy_level"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="隐私级别"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_clear_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="清除浏览数据"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 关于 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="关于"
-                android:textColor="@color/md_primary"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.05"
-                android:layout_marginBottom="8dp"
-                android:layout_marginHorizontal="4dp" />
-
+            <!-- ====== 功能 ====== -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
-                android:layout_marginBottom="20dp">
+                app:cardBackgroundColor="?android:colorBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="12dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="夜间模式"
+                            android:textColor="?android:textColorPrimary"
+                            android:textSize="15sp" />
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/night_mode_switch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="?attr/colorOutline"
+                        android:layout_marginVertical="4dp" />
 
                     <TextView
+                        android:id="@+id/btn_passwords"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="版本：3.0.0"
+                        android:layout_height="wrap_content"
+                        android:text="密码管理"
                         android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp" />
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/colorOutline" android:layout_marginHorizontal="16dp" />
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
 
                     <TextView
+                        android:id="@+id/btn_reading_list"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:text="内核：Gecko 152 + Chromium"
+                        android:layout_height="wrap_content"
+                        android:text="阅读列表"
                         android:textColor="?android:textColorPrimary"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_extensions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="扩展管理"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_quick_links"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="快速链接"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_backup_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="备份数据"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_stats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="统计信息"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/btn_data_sync"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="数据同步"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

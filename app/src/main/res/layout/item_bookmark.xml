@@ -7,7 +7,7 @@
     android:layout_marginVertical="4dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="0dp"
-    app:strokeWidth="1dp"
+    app:strokeWidth="0.5dp"
     app:strokeColor="?attr/colorOutline"
     app:cardBackgroundColor="?android:colorBackground">
 
@@ -20,12 +20,12 @@
 
         <ImageView
             android:id="@+id/bookmark_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_marginEnd="12dp"
             android:src="@drawable/ic_edge_search"
-            android:background="@drawable/quick_link_card_bg"
-            android:padding="8dp"
+            android:padding="6dp"
+            android:background="@drawable/menu_item_bg"
             android:contentDescription="图标" />
 
         <LinearLayout
@@ -42,6 +42,7 @@
                 android:text="书签标题"
                 android:textColor="?android:textColorPrimary"
                 android:textSize="14sp"
+                android:fontFamily="sans-serif"
                 android:ellipsize="end" />
 
             <TextView
@@ -53,6 +54,7 @@
                 android:text="url"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="11sp"
+                android:fontFamily="sans-serif"
                 android:ellipsize="end" />
 
             <TextView

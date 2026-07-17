@@ -18,7 +18,7 @@
             app:navigationIcon="@drawable/ic_arrow_back"
             app:title="数据同步"
             app:titleTextColor="?android:textColorPrimary"
-            app:titleCentered="false" />
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,13 +27,12 @@
             android:paddingHorizontal="16dp"
             android:paddingBottom="32dp">
 
-            <!-- 状态信息 -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
                 app:cardBackgroundColor="?android:colorBackground"
                 android:layout_marginBottom="20dp">
@@ -63,12 +62,11 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 导出全部数据 -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出全部数据"
-                android:textColor="@color/md_primary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -78,9 +76,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
                 app:cardBackgroundColor="?android:colorBackground"
                 android:layout_marginBottom="20dp">
@@ -114,18 +112,16 @@
                         android:layout_height="48dp"
                         android:text="导出并分享"
                         android:textSize="14sp"
-                        app:backgroundTint="@color/md_primary"
                         app:cornerRadius="12dp"
                         style="@style/Widget.Material3.Button" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 导入数据 -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导入数据"
-                android:textColor="@color/md_primary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -135,9 +131,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
                 app:cardBackgroundColor="?android:colorBackground"
                 android:layout_marginBottom="20dp">
@@ -171,18 +167,16 @@
                         android:layout_height="48dp"
                         android:text="选择文件并导入"
                         android:textSize="14sp"
-                        app:backgroundTint="@color/md_secondary"
                         app:cornerRadius="12dp"
                         style="@style/Widget.Material3.Button" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 导出书签 -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出书签"
-                android:textColor="@color/md_primary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -192,9 +186,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
                 app:cardBackgroundColor="?android:colorBackground"
                 android:layout_marginBottom="20dp">
@@ -228,18 +222,16 @@
                         android:layout_height="48dp"
                         android:text="导出书签"
                         android:textSize="14sp"
-                        app:backgroundTint="@color/md_primary"
                         app:cornerRadius="12dp"
                         style="@style/Widget.Material3.Button" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 导出密码 -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出密码"
-                android:textColor="@color/md_primary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -249,9 +241,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
+                app:strokeWidth="0.5dp"
                 app:strokeColor="?attr/colorOutline"
                 app:cardBackgroundColor="?android:colorBackground"
                 android:layout_marginBottom="20dp">
@@ -285,7 +277,6 @@
                         android:layout_height="48dp"
                         android:text="导出密码"
                         android:textSize="14sp"
-                        app:backgroundTint="@color/md_error"
                         app:cornerRadius="12dp"
                         style="@style/Widget.Material3.Button" />
                 </LinearLayout>

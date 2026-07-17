@@ -14,23 +14,21 @@
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="性能中心"
         app:titleTextColor="?android:textColorPrimary"
-        app:titleCentered="false" />
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <TextView
         android:id="@+id/summary_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="性能摘要"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
         android:textColor="?android:textColorSecondary"
-        android:textSize="14sp"
-        android:visibility="gone"
-        android:layout_gravity="center"
-        android:layout_marginTop="40dp" />
+        android:textSize="14sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/performance_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp" />
+        android:paddingVertical="6dp" />
 </LinearLayout>

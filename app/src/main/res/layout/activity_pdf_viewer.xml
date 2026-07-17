@@ -12,8 +12,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?android:colorBackground"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="查看"
-        app:titleTextColor="?android:textColorPrimary" />
+        app:title="PDF查看器"
+        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <FrameLayout
         android:id="@+id/pdf_container"
@@ -34,7 +35,8 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_arrow_back"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="上一页" />
 
         <TextView
             android:id="@+id/page_indicator"
@@ -42,13 +44,15 @@
             android:layout_height="wrap_content"
             android:text="1 / 1"
             android:textColor="?android:textColorPrimary"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:fontFamily="sans-serif" />
 
         <ImageButton
             android:id="@+id/btn_next_page"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_arrow_forward"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="下一页" />
     </LinearLayout>
 </LinearLayout>

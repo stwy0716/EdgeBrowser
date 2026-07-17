@@ -7,8 +7,10 @@
         <item name="colorOnPrimaryContainer">@color/md_dark_on_primary_container</item>
         <item name="colorSecondary">@color/md_secondary</item>
         <item name="colorSecondaryContainer">@color/md_dark_surface_variant</item>
+        <item name="colorOnSecondaryContainer">@color/md_dark_on_background</item>
         <item name="colorTertiary">@color/md_tertiary</item>
         <item name="colorError">@color/md_error</item>
+        <item name="colorErrorContainer">@color/md_error_container</item>
         <item name="colorSurface">@color/md_dark_surface</item>
         <item name="colorOnSurface">@color/md_dark_on_background</item>
         <item name="colorSurfaceVariant">@color/md_dark_surface_variant</item>
@@ -22,8 +24,12 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowBackground">@color/md_dark_background</item>
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Small</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Medium</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Large</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.EdgeSmall</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.EdgeMedium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.EdgeLarge</item>
+        <item name="bottomSheetStyle">@style/EdgeBottomSheet</item>
+        <item name="materialCardViewStyle">@style/EdgeCardView</item>
     </style>
 </resources>
