@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- === Brand Colors (Edge 2026 Blue) === -->
-    <color name="md_primary">#0078D4</color>
-    <color name="md_primary_container">#E0F0FF</color>
+    <!-- === Brand Colors (Deep Red/Burgundy header) === -->
+    <color name="md_primary">#8B0000</color>
+    <color name="md_primary_container">#FFE0E0</color>
     <color name="md_on_primary">#FFFFFF</color>
-    <color name="md_on_primary_container">#002D5A</color>
+    <color name="md_on_primary_container">#3D0000</color>
     
     <!-- === Secondary === -->
-    <color name="md_secondary">#5E6B7A</color>
-    <color name="md_secondary_container">#EDF1F5</color>
-    <color name="md_on_secondary_container">#1A2B3F</color>
+    <color name="md_secondary">#6B5E5E</color>
+    <color name="md_secondary_container">#F5F0F0</color>
+    <color name="md_on_secondary_container">#2B1A1A</color>
     
     <!-- === Tertiary === -->
     <color name="md_tertiary">#0B7B5B</color>
@@ -20,27 +20,39 @@
     <color name="md_error_container">#FFE8E5</color>
     
     <!-- === Surface Hierarchy (light) === -->
-    <color name="md_surface">#F5F6F8</color>
-    <color name="md_surface_variant">#EFF1F4</color>
+    <color name="md_surface">#FFFFFF</color>
+    <color name="md_surface_variant">#F5F5F5</color>
     <color name="md_surface_container">#FFFFFF</color>
-    <color name="md_surface_container_high">#F8F9FB</color>
-    <color name="md_surface_container_low">#FCFCFD</color>
-    <color name="md_surface_dim">#E3E6EB</color>
+    <color name="md_surface_container_high">#FAFAFA</color>
+    <color name="md_surface_container_low">#FCFCFC</color>
+    <color name="md_surface_dim">#E0E0E0</color>
     <color name="md_inverse_surface">#2B2D31</color>
     
     <!-- === Background === -->
-    <color name="md_background">#F5F6F8</color>
+    <color name="md_background">#FFFFFF</color>
     <color name="md_on_background">#1A1C1E</color>
     
     <!-- === Outline === -->
     <color name="md_outline">#D1D5DB</color>
-    <color name="md_outline_variant">#E5E8ED</color>
+    <color name="md_outline_variant">#E5E5E5</color>
+    
+    <!-- === Bottom Navigation === -->
+    <color name="bottom_nav_bg">#F5F5F5</color>
+    <color name="bottom_nav_divider">#E0E0E0</color>
+    <color name="bottom_nav_icon">#666666</color>
+    <color name="bottom_nav_icon_active">#8B0000</color>
+    
+    <!-- === Header === -->
+    <color name="header_bg">#8B0000</color>
+    <color name="header_text">#FFFFFF</color>
+    <color name="header_search_bg">#FFFFFF</color>
+    <color name="header_search_hint">#999999</color>
     
     <!-- === Dark Theme === -->
-    <color name="md_dark_primary">#60CDFF</color>
-    <color name="md_dark_primary_container">#003D73</color>
-    <color name="md_dark_on_primary">#002D5A</color>
-    <color name="md_dark_on_primary_container">#E0F0FF</color>
+    <color name="md_dark_primary">#FF6B6B</color>
+    <color name="md_dark_primary_container">#5C0000</color>
+    <color name="md_dark_on_primary">#3D0000</color>
+    <color name="md_dark_on_primary_container">#FFE0E0</color>
     <color name="md_dark_surface">#1B1B1F</color>
     <color name="md_dark_surface_variant">#2B2D31</color>
     <color name="md_dark_surface_container">#212225</color>
@@ -49,15 +61,6 @@
     <color name="md_dark_on_background">#E3E5E9</color>
     <color name="md_dark_outline">#5F6368</color>
     <color name="md_dark_outline_variant">#3C4043</color>
-    
-    <!-- === Gradient Accents === -->
-    <color name="gradient_start">#0078D4</color>
-    <color name="gradient_mid">#5B5FC7</color>
-    <color name="gradient_end">#9334E6</color>
-    <color name="gradient_card_1">#E8F4FD</color>
-    <color name="gradient_card_2">#FFF0F0</color>
-    <color name="gradient_card_3">#E8F8F0</color>
-    <color name="gradient_card_4">#F4EBFF</color>
     
     <!-- === Tab Group Colors === -->
     <color name="group_blue">#0078D4</color>
@@ -73,14 +76,14 @@
     <color name="status_sleeping">#EAA300</color>
     <color name="status_error">#C42B1C</color>
     
-    <!-- === Shadow Colors === -->
+    <!-- === Shadow === -->
     <color name="shadow_light">#1A000000</color>
     <color name="shadow_medium">#33000000</color>
     <color name="shadow_heavy">#4D000000</color>
     
     <!-- === InPrivate === -->
     <color name="incognito_bg">#1B1B1F</color>
-    <color name="incognito_accent">#60CDFF</color>
+    <color name="incognito_accent">#FF6B6B</color>
     
     <!-- === Reader Mode === -->
     <color name="reader_bg_light">#F8F4E8</color>

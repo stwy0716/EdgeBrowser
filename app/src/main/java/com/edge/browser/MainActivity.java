@@ -1,6 +1,7 @@
 package com.edge.browser;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -20,7 +21,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.ValueCallback;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -29,8 +29,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,7 +73,6 @@ import com.edge.browser.theme.ThemeManager;
 import com.edge.browser.tools.SideToolsManager;
 import com.edge.browser.translate.TranslationManager;
 import com.edge.browser.ui.NewTabPage;
-import com.edge.browser.ui.TabListAdapter;
 import com.edge.browser.ui.TabPagerAdapter;
 import com.edge.browser.video.VideoDownloader;
 import com.edge.browser.webview.ChromiumWebViewFactory;
@@ -123,18 +120,15 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     // Views - 底部栏
-    private TextView urlBarText;
+    private EditText urlBarText;
     private int primaryTextColor;
     private ImageView urlLockIcon;
-    private ImageView btnShare, btnRefreshBar;
+    private ImageView urlShare, btnRefresh;
     private ImageView btnBack, btnForward, btnHome, btnMenu;
-    private FrameLayout btnTabsContainer;
+    private LinearLayout btnTabs;
     private TextView tabCountText;
     private ProgressBar progressBar;
     private ViewPager2 viewPager;
-    private DrawerLayout drawerLayout;
-    private RecyclerView tabsRecyclerView;
-    private TextView tabCountLabel;
 
     // 查找栏
     private View findBar;
@@ -204,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
 
     // Adapters
     private TabPagerAdapter pagerAdapter;
-    private TabListAdapter tabListAdapter;
 
     // WebView cache
     private final Map<String, IBrowserView> webViewCache = new HashMap<>();
@@ -224,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             setContentView(R.layout.activity_main);
             initViews();
             setupViewPager();
-            setupTabDrawer();
             setupFindBar();
             setupListeners();
             setupAddressBarSwipe();
@@ -320,19 +312,16 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private void initViews() {
         urlBarText = findViewById(R.id.url_bar_text);
         urlLockIcon = findViewById(R.id.url_lock_icon);
-        btnShare = findViewById(R.id.btn_share);
-        btnRefreshBar = findViewById(R.id.btn_refresh_bar);
+        urlShare = findViewById(R.id.url_share);
+        btnRefresh = findViewById(R.id.btn_refresh);
         btnBack = findViewById(R.id.btn_back);
         btnForward = findViewById(R.id.btn_forward);
         btnHome = findViewById(R.id.btn_home);
-        btnTabsContainer = findViewById(R.id.btn_tabs_container);
-        tabCountText = findViewById(R.id.tab_count_text);
+        btnTabs = findViewById(R.id.btn_tabs);
+        tabCountText = findViewById(R.id.tab_count);
         btnMenu = findViewById(R.id.btn_menu);
         progressBar = findViewById(R.id.progress_bar);
         viewPager = findViewById(R.id.view_pager);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        tabsRecyclerView = findViewById(R.id.tabs_recycler);
-        tabCountLabel = findViewById(R.id.tab_count_label);
 
         // 查找栏
         findBar = findViewById(R.id.find_bar);
@@ -398,59 +387,6 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 }
             }
         });
-    }
-
-    private void setupTabDrawer() {
-        tabListAdapter = new TabListAdapter(this, new ArrayList<>(), new TabListAdapter.TabListCallback() {
-            @Override public void onTabClicked(int index) {
-                tabManager.switchToTab(index);
-                viewPager.setCurrentItem(index, false);
-                drawerLayout.closeDrawer(GravityCompat.END);
-            }
-            @Override public void onTabClosed(int index) {
-                TabItem tab = tabManager.getTabAt(index);
-                if (tab != null) {
-                    webViewCache.remove(tab.getId());
-                }
-                tabManager.removeTab(index);
-                pagerAdapter.updateTabs(tabManager.getAllTabs());
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-                updateTabCount();
-            }
-            @Override public void onTabPinned(int index) {
-                tabManager.pinTab(index);
-            }
-        });
-        tabsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        tabsRecyclerView.setAdapter(tabListAdapter);
-
-        TextView btnIncognito = drawerLayout.findViewById(R.id.btn_new_incognito);
-        if (btnIncognito != null) {
-            btnIncognito.setOnClickListener(v -> {
-                TabItem tab = tabManager.addTab("InPrivate", "about:blank");
-                pagerAdapter.addTab(tab);
-                viewPager.setCurrentItem(pagerAdapter.getItemCount() - 1, true);
-                drawerLayout.closeDrawer(GravityCompat.END);
-                updateTabCount();
-            });
-        }
-
-        TextView btnCloseAll = drawerLayout.findViewById(R.id.btn_close_all);
-        if (btnCloseAll != null) {
-            btnCloseAll.setOnClickListener(v -> {
-                webViewCache.clear();
-                int count = tabManager.getTabCount();
-                for (int i = count - 1; i >= 0; i--) {
-                    tabManager.removeTab(i);
-                }
-                TabItem newTab = tabManager.addTab("新标签页", "about:blank");
-                pagerAdapter.updateTabs(tabManager.getAllTabs());
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-                viewPager.setCurrentItem(0, false);
-                drawerLayout.closeDrawer(GravityCompat.END);
-                updateTabCount();
-            });
-        }
     }
 
     // === 查找栏 ===
@@ -541,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
 
         btnHome.setOnClickListener(v -> navigateTo("https://www.google.com"));
 
-        btnRefreshBar.setOnClickListener(v -> {
+        btnRefresh.setOnClickListener(v -> {
             IBrowserView wv = getCurrentWebView();
             if (wv != null) {
                 if (wv.isLoading()) wv.stopLoading();
@@ -549,7 +485,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             }
         });
 
-        btnShare.setOnClickListener(v -> {
+        urlShare.setOnClickListener(v -> {
             IBrowserView wv = getCurrentWebView();
             if (wv == null) return;
             String url = wv.getUrl();
@@ -561,14 +497,8 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             }
         });
 
-        btnTabsContainer.setOnClickListener(v -> {
-            if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-                drawerLayout.closeDrawer(GravityCompat.END);
-            } else {
-                tabListAdapter.updateTabs(tabManager.getAllTabs());
-                updateTabCount();
-                drawerLayout.openDrawer(GravityCompat.END);
-            }
+        btnTabs.setOnClickListener(v -> {
+            updateTabCount();
         });
 
         btnMenu.setOnClickListener(v -> showEdgeMenu());
@@ -583,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 if (wv != null && wv.canGoForward()) wv.goForward();
             }
             @Override public void onShowTabsGesture() {
-                if (drawerLayout != null) drawerLayout.openDrawer(GravityCompat.END);
+                updateTabCount();
             }
             @Override public void onRefreshGesture() {
                 IBrowserView wv = getCurrentWebView();
@@ -934,9 +864,6 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 tabCountText.setVisibility(View.GONE);
             }
         }
-        if (tabCountLabel != null) {
-            tabCountLabel.setText(count + " 个标签页");
-        }
     }
 
     private void applyToolbarCustomization() {
@@ -944,7 +871,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         findViewById(R.id.btn_back).setVisibility(toolbarCustomizer.isButtonVisible("back") ? View.VISIBLE : View.GONE);
         findViewById(R.id.btn_forward).setVisibility(toolbarCustomizer.isButtonVisible("forward") ? View.VISIBLE : View.GONE);
         findViewById(R.id.btn_home).setVisibility(toolbarCustomizer.isButtonVisible("home") ? View.VISIBLE : View.GONE);
-        findViewById(R.id.btn_tabs_container).setVisibility(toolbarCustomizer.isButtonVisible("tabs") ? View.VISIBLE : View.GONE);
+        findViewById(R.id.btn_tabs).setVisibility(toolbarCustomizer.isButtonVisible("tabs") ? View.VISIBLE : View.GONE);
         findViewById(R.id.btn_menu).setVisibility(toolbarCustomizer.isButtonVisible("menu") ? View.VISIBLE : View.GONE);
     }
     public IBrowserView getCurrentWebView() {
@@ -1138,14 +1065,15 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         MenuGridAdapter adapter = new MenuGridAdapter(menuItems);
         menuGrid.setAdapter(adapter);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(sheetView)
-                .create();
+        Dialog dialog = new Dialog(this, R.style.EdgeBottomSheetDialog);
+        dialog.setContentView(sheetView);
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().setGravity(Gravity.BOTTOM);
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setWindowAnimations(R.style.EdgeBottomSheetAnimation);
         }
         dialog.show();
     }
@@ -1325,10 +1253,6 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
-            return;
-        }
         if (findBar != null && findBar.getVisibility() == View.VISIBLE) {
             hideFindBar();
             return;

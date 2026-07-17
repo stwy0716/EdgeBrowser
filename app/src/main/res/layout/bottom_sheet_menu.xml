@@ -3,22 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?android:colorBackground"
-    android:paddingBottom="24dp">
+    android:background="#FFFFFF"
+    android:paddingBottom="24dp"
+    android:minHeight="320dp">
 
+    <!-- Drag Handle -->
     <View
         android:layout_width="32dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="12dp"
-        android:background="?attr/colorOutline"
-        android:alpha="0.5" />
+        android:layout_marginBottom="16dp"
+        android:background="#CCCCCC" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/menu_grid"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:paddingHorizontal="8dp"
         android:clipToPadding="false" />
 </LinearLayout>

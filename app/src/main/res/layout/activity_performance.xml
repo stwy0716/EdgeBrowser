@@ -4,16 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:colorBackground"
+        android:background="@color/header_bg"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/header_text"
         app:title="性能中心"
-        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextColor="@color/header_text"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <TextView
@@ -23,7 +24,8 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
         android:textColor="?android:textColorSecondary"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:fontFamily="sans-serif" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/performance_list"

@@ -4,16 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:colorBackground"
+        android:background="@color/header_bg"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/header_text"
         app:title="设置"
-        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextColor="@color/header_text"
         app:titleCentered="false"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
@@ -37,8 +38,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground">
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -64,7 +65,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="?attr/colorOutline"
+                        android:background="@color/md_outline_variant"
                         android:layout_marginVertical="8dp" />
 
                     <TextView
@@ -85,7 +86,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="?attr/colorOutline"
+                        android:background="@color/md_outline_variant"
                         android:layout_marginVertical="8dp" />
 
                     <TextView
@@ -106,7 +107,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="?attr/colorOutline"
+                        android:background="@color/md_outline_variant"
                         android:layout_marginVertical="8dp" />
 
                     <TextView
@@ -145,8 +146,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground">
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -300,7 +301,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="?attr/colorOutline"
+                        android:background="@color/md_outline_variant"
                         android:layout_marginVertical="8dp" />
 
                     <TextView
@@ -361,8 +362,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground">
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -392,7 +393,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:background="?attr/colorOutline"
+                        android:background="@color/md_outline_variant"
                         android:layout_marginVertical="4dp" />
 
                     <TextView

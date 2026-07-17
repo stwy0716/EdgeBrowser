@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.edge.browser.R;
 import com.edge.browser.tab.TabItem;
-import com.google.android.material.card.MaterialCardView;
+
 
 import java.util.List;
 
@@ -93,7 +93,7 @@ public class TabListAdapter extends RecyclerView.Adapter<TabListAdapter.ViewHold
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        MaterialCardView card;
+        View card;
         TextView titleText;
         TextView urlText;
         ImageView closeIcon;
@@ -103,10 +103,10 @@ public class TabListAdapter extends RecyclerView.Adapter<TabListAdapter.ViewHold
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            card = (MaterialCardView) itemView;
+            card = itemView;
             titleText = itemView.findViewById(R.id.tab_title);
             urlText = itemView.findViewById(R.id.tab_url);
-            closeIcon = itemView.findViewById(R.id.btn_close_tab);
+            closeIcon = itemView.findViewById(R.id.tab_close);
             pinIcon = itemView.findViewById(R.id.btn_tab_pin);
             muteIcon = itemView.findViewById(R.id.btn_tab_mute);
             groupIndicator = itemView.findViewById(R.id.group_indicator);

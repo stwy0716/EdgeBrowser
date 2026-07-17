@@ -48,9 +48,9 @@ public class NewTabPage {
         this.context = context;
         this.rootView = LayoutInflater.from(context).inflate(R.layout.new_tab_page, null);
 
-        searchInput = rootView.findViewById(R.id.new_tab_search);
+        searchInput = rootView.findViewById(R.id.search_input);
         quickLinksGrid = rootView.findViewById(R.id.quick_links_grid);
-        newsFeed = rootView.findViewById(R.id.news_feed);
+        newsFeed = rootView.findViewById(R.id.news_recycler);
 
         // 语音搜索
         ImageView btnVoice = rootView.findViewById(R.id.btn_voice_search);

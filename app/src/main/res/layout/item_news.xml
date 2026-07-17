@@ -1,57 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="0.5dp"
-    app:strokeColor="?attr/colorOutline"
-    app:cardBackgroundColor="?android:colorBackground">
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="@drawable/news_item_bg">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp">
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingEnd="12dp"
+        android:layout_gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/news_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingEnd="12dp">
+            android:maxLines="2"
+            android:text="新闻标题"
+            android:textColor="#222222"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp" />
 
-            <TextView
-                android:id="@+id/news_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:text="新闻标题"
-                android:textColor="?android:textColorPrimary"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:ellipsize="end" />
+        <TextView
+            android:id="@+id/news_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:maxLines="2"
+            android:text="新闻描述"
+            android:textColor="#888888"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:ellipsize="end" />
 
-            <TextView
-                android:id="@+id/news_source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="来源"
-                android:textColor="?android:textColorSecondary"
-                android:textSize="11sp"
-                android:fontFamily="sans-serif" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/news_image"
-            android:layout_width="80dp"
-            android:layout_height="60dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="图片"
-            android:background="@color/md_surface_variant" />
+        <TextView
+            android:id="@+id/news_source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="来源"
+            android:textColor="#AAAAAA"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif" />
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    <ImageView
+        android:id="@+id/news_image"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="图片"
+        android:background="@drawable/news_image_bg" />
+</LinearLayout>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,10 +14,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?android:colorBackground"
+            android:background="@color/header_bg"
             app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/header_text"
             app:title="数据同步"
-            app:titleTextColor="?android:textColorPrimary"
+            app:titleTextColor="@color/header_text"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
         <LinearLayout
@@ -33,8 +34,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="20dp">
 
                 <LinearLayout
@@ -66,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出全部数据"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/md_primary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -79,8 +80,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="20dp">
 
                 <LinearLayout
@@ -121,7 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导入数据"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/md_primary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -134,8 +135,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="20dp">
 
                 <LinearLayout
@@ -176,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出书签"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/md_primary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -189,8 +190,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="20dp">
 
                 <LinearLayout
@@ -231,7 +232,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="导出密码"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/md_primary"
                 android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.05"
@@ -244,8 +245,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="20dp">
 
                 <LinearLayout

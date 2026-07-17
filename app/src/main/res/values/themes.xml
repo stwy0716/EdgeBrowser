@@ -20,9 +20,9 @@
         <item name="colorOnBackground">@color/md_on_background</item>
         <item name="colorOutline">@color/md_outline</item>
         <item name="colorOutlineVariant">@color/md_outline_variant</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/md_surface_container</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/header_bg</item>
+        <item name="android:navigationBarColor">@color/bottom_nav_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowBackground">@color/md_background</item>
         <item name="android:windowContentTransitions">true</item>
@@ -56,6 +56,20 @@
         <item name="shapeAppearance">@style/ShapeAppearance.EdgeLarge</item>
         <item name="backgroundTint">@color/md_surface_container</item>
         <item name="behavior_draggable">true</item>
+    </style>
+
+    <!-- Edge Bottom Sheet Dialog (for menu popup) -->
+    <style name="EdgeBottomSheetDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+    </style>
+
+    <style name="EdgeBottomSheetAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
     <!-- Edge Card View -->

@@ -4,32 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:colorBackground"
+        android:background="@color/header_bg"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/header_text"
         app:title="下载管理"
-        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextColor="@color/header_text"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
-    <TextView
-        android:id="@+id/empty_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="暂无下载"
-        android:textColor="?android:textColorSecondary"
-        android:textSize="16sp"
-        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/download_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:paddingHorizontal="12dp"
         android:paddingVertical="6dp" />
+
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="48dp"
+        android:text="暂无下载"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="14sp"
+        android:visibility="gone" />
 </LinearLayout>

@@ -4,16 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:colorBackground"
+        android:background="@color/header_bg"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/header_text"
         app:title="任务管理器"
-        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextColor="@color/header_text"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <TextView
@@ -52,7 +53,8 @@
         android:layout_height="48dp"
         android:layout_margin="16dp"
         android:text="关闭所有"
-        android:textColor="?android:textColorPrimary"
+        android:textColor="@color/header_text"
+        android:backgroundTint="@color/header_bg"
         app:cornerRadius="12dp"
         android:fontFamily="sans-serif" />
 </LinearLayout>

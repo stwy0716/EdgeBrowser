@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="0.5dp"
-    app:strokeColor="?attr/colorOutline"
-    app:cardBackgroundColor="?android:colorBackground">
+    android:background="@drawable/tab_list_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="0dp">
+        android:orientation="vertical">
 
+        <!-- Preview Image -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:background="@color/md_surface_variant">
+            android:background="#F0F0F0">
 
             <ImageView
                 android:id="@+id/tab_preview"
@@ -28,21 +23,17 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:contentDescription="预览" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="bottom"
-                android:background="?attr/colorOutline" />
         </FrameLayout>
 
+        <!-- Title + URL -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="10dp">
+            android:paddingVertical="10dp"
+            android:background="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -56,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:text="标签页标题"
-                    android:textColor="?android:textColorPrimary"
+                    android:textColor="#333333"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif"
                     android:ellipsize="end" />
@@ -65,10 +56,10 @@
                     android:id="@+id/tab_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:maxLines="1"
                     android:text="url"
-                    android:textColor="?android:textColorSecondary"
+                    android:textColor="#999999"
                     android:textSize="11sp"
                     android:fontFamily="sans-serif"
                     android:ellipsize="end" />
@@ -79,7 +70,7 @@
                 android:layout_width="3dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/md_primary"
+                android:background="#8B0000"
                 android:visibility="gone" />
 
             <ImageButton
@@ -99,7 +90,7 @@
                 android:visibility="gone" />
 
             <ImageView
-                android:id="@+id/btn_close_tab"
+                android:id="@+id/tab_close"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/ic_close"
@@ -108,4 +99,4 @@
                 android:background="?attr/selectableItemBackgroundBorderless" />
         </LinearLayout>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</FrameLayout>

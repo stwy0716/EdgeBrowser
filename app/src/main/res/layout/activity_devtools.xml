@@ -4,16 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:colorBackground">
+    android:background="@color/md_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?android:colorBackground"
+        android:background="@color/header_bg"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@color/header_text"
         app:title="开发者工具"
-        app:titleTextColor="?android:textColorPrimary"
+        app:titleTextColor="@color/header_text"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
     <ScrollView
@@ -52,8 +53,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface"
                 android:layout_marginBottom="16dp">
 
                 <ScrollView
@@ -127,8 +128,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?colorSurfaceContainerHighest"
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface_variant"
                 android:layout_marginBottom="16dp">
 
                 <ScrollView
@@ -251,8 +252,8 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0.5dp"
-                app:strokeColor="?attr/colorOutline"
-                app:cardBackgroundColor="?android:colorBackground">
+                app:strokeColor="@color/md_outline_variant"
+                app:cardBackgroundColor="@color/md_surface">
 
                 <TextView
                     android:id="@+id/tv_resource_info"
