@@ -3,7 +3,9 @@ package com.edge.browser;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,6 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.edge.browser.data.DatabaseHelper;
+import com.edge.browser.history.HistoryManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,19 +28,8 @@ public class HistoryActivity extends AppCompatActivity {
 
     private RecyclerView historyRecycler;
     private HistoryAdapter adapter;
-    private List<HistoryItem> historyItems;
-
-    public static class HistoryItem {
-        String title;
-        String url;
-        long timestamp;
-
-        public HistoryItem(String title, String url, long timestamp) {
-            this.title = title;
-            this.url = url;
-            this.timestamp = timestamp;
-        }
-    }
+    private List<DatabaseHelper.HistoryEntry> historyItems;
+    private HistoryManager historyManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,18 +45,22 @@ public class HistoryActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("历史记录");
         }
 
+        historyManager = HistoryManager.getInstance(this);
         historyRecycler = findViewById(R.id.history_list);
         historyRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         historyItems = loadHistory();
         adapter = new HistoryAdapter(historyItems);
         historyRecycler.setAdapter(adapter);
+
+        if (historyItems.isEmpty()) {
+            findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+        }
     }
 
-    private List<HistoryItem> loadHistory() {
-        List<HistoryItem> items = new ArrayList<>();
-        // Load from database (simplified)
-        return items;
+    private List<DatabaseHelper.HistoryEntry> loadHistory() {
+        List<DatabaseHelper.HistoryEntry> items = historyManager.getHistory();
+        return items != null ? items : new ArrayList<>();
     }
 
     @Override
@@ -76,9 +74,9 @@ public class HistoryActivity extends AppCompatActivity {
 
     private class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-        private List<HistoryItem> items;
+        private List<DatabaseHelper.HistoryEntry> items;
 
-        HistoryAdapter(List<HistoryItem> items) {
+        HistoryAdapter(List<DatabaseHelper.HistoryEntry> items) {
             this.items = items;
         }
 
@@ -91,10 +89,10 @@ public class HistoryActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            HistoryItem item = items.get(position);
-            holder.titleText.setText(item.title);
+            DatabaseHelper.HistoryEntry item = items.get(position);
+            holder.titleText.setText(item.title != null ? item.title : item.url);
             holder.urlText.setText(item.url);
-            holder.timeText.setText(formatDate(item.timestamp));
+            holder.timeText.setText(formatDate(item.visitedAt));
 
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(HistoryActivity.this, MainActivity.class);
@@ -102,6 +100,24 @@ public class HistoryActivity extends AppCompatActivity {
                 intent.setData(android.net.Uri.parse(item.url));
                 startActivity(intent);
                 finish();
+            });
+
+            holder.itemView.setOnLongClickListener(v -> {
+                new AlertDialog.Builder(HistoryActivity.this)
+                        .setTitle(item.title != null ? item.title : item.url)
+                        .setMessage("删除此历史记录？")
+                        .setPositiveButton("删除", (d, w) -> {
+                            historyManager.removeEntry(item.id);
+                            items.remove(position);
+                            notifyItemRemoved(position);
+                            if (items.isEmpty()) {
+                                findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+                            }
+                            Toast.makeText(HistoryActivity.this, "已删除", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+                return true;
             });
         }
 

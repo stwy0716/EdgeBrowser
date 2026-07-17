@@ -90,6 +90,15 @@ public class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.TabVie
         container.addView(view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
+
+        // 如果 WebView 是空白但标签页有 URL，自动加载
+        String wvUrl = webView.getUrl();
+        String tabUrl = tab.getUrl();
+        if ((wvUrl == null || wvUrl.isEmpty() || "about:blank".equals(wvUrl))
+                && tabUrl != null && !tabUrl.isEmpty()
+                && !"about:blank".equals(tabUrl)) {
+            webView.loadUrl(tabUrl);
+        }
     }
 
     private boolean isNewTab(TabItem tab) {

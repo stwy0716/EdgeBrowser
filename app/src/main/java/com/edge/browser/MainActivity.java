@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
 
     // Views - 底部栏
     private TextView urlBarText;
+    private int primaryTextColor;
     private ImageView urlLockIcon;
     private ImageView btnShare, btnRefreshBar;
     private ImageView btnBack, btnForward, btnHome, btnMenu;
@@ -342,6 +343,8 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         findClose = findBar.findViewById(R.id.find_close);
 
         applyToolbarCustomization();
+
+        primaryTextColor = urlBarText.getCurrentTextColor();
     }
 
     // === Tab 状态恢复 ===
@@ -675,14 +678,14 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 @Override public void onPageStarted(String url) {
                     handler.post(() -> {
                         urlBarText.setText(url);
-                        urlBarText.setTextColor(Color.parseColor("#212121"));
+                        urlBarText.setTextColor(primaryTextColor);
                         updateLockIcon(url);
                     });
                 }
                 @Override public void onPageFinished(String url, String title) {
                     handler.post(() -> {
                         urlBarText.setText(url);
-                        urlBarText.setTextColor(Color.parseColor("#212121"));
+                        urlBarText.setTextColor(primaryTextColor);
                         updateNavigationButtons(finalWv.canGoBack(), finalWv.canGoForward());
                         updateLockIcon(url);
                         // 记录历史
@@ -705,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
                 @Override public void onUrlChanged(String url) {
                     handler.post(() -> {
                         urlBarText.setText(url);
-                        urlBarText.setTextColor(Color.parseColor("#212121"));
+                        urlBarText.setTextColor(primaryTextColor);
                         updateLockIcon(url);
                     });
                 }
@@ -865,19 +868,22 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
         }
 
         urlBarText.setText(url);
-        urlBarText.setTextColor(Color.parseColor("#212121"));
+        urlBarText.setTextColor(primaryTextColor);
 
-        TabItem tab = tabManager.getTabAt(viewPager.getCurrentItem());
+        int currentPos = viewPager.getCurrentItem();
+        TabItem tab = tabManager.getTabAt(currentPos);
         if (tab != null) {
             tab.setUrl(url);
             tab.setTitle(url);
-        }
+            tabManager.updateTab(tab);
 
-        IBrowserView wv = getCurrentWebView();
-        if (wv != null) {
-            wv.loadUrl(url);
-        } else {
-            newTab(url);
+            // 强制创建/获取 WebView 并加载 URL
+            IBrowserView wv = getOrCreateWebView(tab);
+            if (wv != null) {
+                wv.loadUrl(url);
+            }
+            // 刷新适配器以显示 WebView（替换新标签页）
+            pagerAdapter.notifyItemChanged(currentPos);
         }
     }
 
@@ -891,7 +897,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private void updateUrlBar(String url) {
         if (url != null && !url.isEmpty() && !"about:blank".equals(url)) {
             urlBarText.setText(url);
-            urlBarText.setTextColor(Color.parseColor("#212121"));
+            urlBarText.setTextColor(primaryTextColor);
         } else {
             urlBarText.setText("搜索或输入网址");
             urlBarText.setTextColor(Color.parseColor("#9E9E9E"));

@@ -34,4 +34,8 @@ public class HistoryManager {
     public void clearHistory() {
         db.clearHistory();
     }
+
+    public void removeEntry(long id) {
+        db.removeHistory(id);
+    }
 }

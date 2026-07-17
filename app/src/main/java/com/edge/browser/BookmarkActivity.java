@@ -3,6 +3,7 @@ package com.edge.browser;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.edge.browser.tab.TabItem;
-import com.edge.browser.tab.TabManager;
+import com.edge.browser.bookmark.BookmarkManager;
+import com.edge.browser.data.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,21 +27,8 @@ public class BookmarkActivity extends AppCompatActivity {
 
     private RecyclerView bookmarksRecycler;
     private BookmarkAdapter adapter;
-    private List<BookmarkItem> bookmarks;
-
-    public static class BookmarkItem {
-        String title;
-        String url;
-        long timestamp;
-        String folder;
-
-        public BookmarkItem(String title, String url, long timestamp, String folder) {
-            this.title = title;
-            this.url = url;
-            this.timestamp = timestamp;
-            this.folder = folder;
-        }
-    }
+    private List<DatabaseHelper.BookmarkEntry> bookmarks;
+    private BookmarkManager bookmarkManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,21 +44,22 @@ public class BookmarkActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("收藏夹");
         }
 
+        bookmarkManager = BookmarkManager.getInstance(this);
         bookmarksRecycler = findViewById(R.id.bookmark_list);
         bookmarksRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         bookmarks = loadBookmarks();
         adapter = new BookmarkAdapter(bookmarks);
         bookmarksRecycler.setAdapter(adapter);
+
+        if (bookmarks.isEmpty()) {
+            findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+        }
     }
 
-    private List<BookmarkItem> loadBookmarks() {
-        // Load from SharedPreferences or database
-        List<BookmarkItem> items = new ArrayList<>();
-        // Mock data
-        items.add(new BookmarkItem("Google", "https://www.google.com", System.currentTimeMillis(), "常用"));
-        items.add(new BookmarkItem("Bing", "https://www.bing.com", System.currentTimeMillis(), "常用"));
-        return items;
+    private List<DatabaseHelper.BookmarkEntry> loadBookmarks() {
+        List<DatabaseHelper.BookmarkEntry> items = bookmarkManager.getBookmarks();
+        return items != null ? items : new ArrayList<>();
     }
 
     @Override
@@ -84,9 +73,9 @@ public class BookmarkActivity extends AppCompatActivity {
 
     private class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
 
-        private List<BookmarkItem> items;
+        private List<DatabaseHelper.BookmarkEntry> items;
 
-        BookmarkAdapter(List<BookmarkItem> items) {
+        BookmarkAdapter(List<DatabaseHelper.BookmarkEntry> items) {
             this.items = items;
         }
 
@@ -99,10 +88,10 @@ public class BookmarkActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            BookmarkItem item = items.get(position);
+            DatabaseHelper.BookmarkEntry item = items.get(position);
             holder.titleText.setText(item.title);
             holder.urlText.setText(item.url);
-            holder.dateText.setText(formatDate(item.timestamp));
+            holder.dateText.setText(formatDate(item.createdAt));
 
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(BookmarkActivity.this, MainActivity.class);
@@ -110,6 +99,24 @@ public class BookmarkActivity extends AppCompatActivity {
                 intent.setData(android.net.Uri.parse(item.url));
                 startActivity(intent);
                 finish();
+            });
+
+            holder.itemView.setOnLongClickListener(v -> {
+                new androidx.appcompat.app.AlertDialog.Builder(BookmarkActivity.this)
+                        .setTitle(item.title)
+                        .setMessage("删除此书签？")
+                        .setPositiveButton("删除", (d, w) -> {
+                            bookmarkManager.removeBookmark(item.id);
+                            items.remove(position);
+                            notifyItemRemoved(position);
+                            if (items.isEmpty()) {
+                                findViewById(R.id.empty_text).setVisibility(View.VISIBLE);
+                            }
+                            Toast.makeText(BookmarkActivity.this, "已删除", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+                return true;
             });
         }
 

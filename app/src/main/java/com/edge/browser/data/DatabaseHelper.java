@@ -263,6 +263,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         getWritableDatabase().delete(TABLE_HISTORY, null, null);
     }
 
+    public void removeHistory(long id) {
+        getWritableDatabase().delete(TABLE_HISTORY, COL_H_ID + "=?", new String[]{String.valueOf(id)});
+    }
+
     public Cursor getHistory() {
         return getReadableDatabase().query(TABLE_HISTORY, null, null, null, null, null,
                 COL_H_VISITED + " DESC");
