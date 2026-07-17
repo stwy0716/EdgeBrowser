@@ -52,9 +52,11 @@ public class GeckoRuntimeManager {
             BrowserLogger.getInstance().i(TAG, LogCategory.SYSTEM,
                     "Gecko 引擎初始化成功 (Firefox 内核)");
             isInitialized = true;
-        } catch (Exception e) {
-            Log.e(TAG, "Gecko 引擎初始化失败", e);
-            BrowserLogger.getInstance().logCrash("GeckoRuntime init", e);
+        } catch (Throwable t) {
+            Log.e(TAG, "Gecko 引擎初始化失败", t);
+            try {
+                BrowserLogger.getInstance().logCrash("GeckoRuntime init", t instanceof Exception ? (Exception) t : new Exception(t));
+            } catch (Throwable ignored) {}
             isInitialized = false;
         }
     }

@@ -228,9 +228,13 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             handleIntent(getIntent());
             checkGoogleWebView();
             updateTabCount();
-        } catch (Exception e) {
-            BrowserLogger.getInstance().logCrash("MainActivity onCreate", e);
-            Toast.makeText(this, "启动失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Throwable t) {
+            try {
+                BrowserLogger.getInstance().logCrash("MainActivity onCreate", t instanceof Exception ? (Exception) t : new Exception(t));
+            } catch (Throwable ignored) {}
+            try {
+                Toast.makeText(this, "启动失败: " + (t.getMessage() != null ? t.getMessage() : t.getClass().getSimpleName()), Toast.LENGTH_LONG).show();
+            } catch (Throwable ignored) {}
             finish();
         }
     }
@@ -306,6 +310,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             // siteCookieManager is already loaded via loadState()
         } catch (Exception e) {
             BrowserLogger.getInstance().logCrash("initManagers", e);
+            throw new RuntimeException("initManagers failed: " + e.getMessage(), e);
         }
     }
 

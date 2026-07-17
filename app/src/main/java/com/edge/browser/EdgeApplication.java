@@ -21,22 +21,22 @@ public class EdgeApplication extends MultiDexApplication {
         // 初始化 Chromium 内核检测
         try {
             ChromiumWebViewFactory.getInstance().init(this);
-        } catch (Exception e) {
-            Log.e(TAG, "ChromiumWebViewFactory init failed", e);
+        } catch (Throwable t) {
+            Log.e(TAG, "ChromiumWebViewFactory init failed", t);
         }
 
         // 初始化 Gecko 引擎 (Firefox 内核 - 内置)
         try {
             GeckoRuntimeManager.getInstance().init(this);
-        } catch (Exception e) {
-            Log.e(TAG, "GeckoRuntime init failed", e);
+        } catch (Throwable t) {
+            Log.e(TAG, "GeckoRuntime init failed", t);
         }
 
         // 初始化日志系统
         try {
             BrowserLogger.getInstance().init(this);
-        } catch (Exception e) {
-            Log.e(TAG, "BrowserLogger init failed", e);
+        } catch (Throwable t) {
+            Log.e(TAG, "BrowserLogger init failed", t);
         }
     }
 
