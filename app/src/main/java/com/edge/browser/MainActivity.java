@@ -123,9 +123,9 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     private EditText urlBarText;
     private int primaryTextColor;
     private ImageView urlLockIcon;
-    private ImageView urlShare, btnRefresh;
-    private ImageView btnBack, btnForward, btnHome, btnMenu;
-    private LinearLayout btnTabs;
+    private ImageView urlShare;
+    private LinearLayout btnRefresh, btnBack, btnForward, btnHome, btnTabs;
+    private ImageView btnMenu;
     private TextView tabCountText;
     private ProgressBar progressBar;
     private ViewPager2 viewPager;
