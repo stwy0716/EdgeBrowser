@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.multidex.MultiDexApplication;
 
 import com.edge.browser.webview.ChromiumWebViewFactory;
-import com.edge.browser.webview.GeckoRuntimeManager;
 
 public class EdgeApplication extends MultiDexApplication {
 
@@ -23,13 +22,6 @@ public class EdgeApplication extends MultiDexApplication {
             ChromiumWebViewFactory.getInstance().init(this);
         } catch (Throwable t) {
             Log.e(TAG, "ChromiumWebViewFactory init failed", t);
-        }
-
-        // 初始化 Gecko 引擎 (Firefox 内核 - 内置)
-        try {
-            GeckoRuntimeManager.getInstance().init(this);
-        } catch (Throwable t) {
-            Log.e(TAG, "GeckoRuntime init failed", t);
         }
 
         // 初始化日志系统

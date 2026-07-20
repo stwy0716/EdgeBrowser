@@ -22,7 +22,7 @@ public class EnginePreferences {
     }
 
     private static EnginePreferences instance;
-    private EngineType currentEngine = EngineType.GECKO;
+    private EngineType currentEngine = EngineType.CHROMIUM;
 
     private EnginePreferences() {}
 
@@ -40,11 +40,11 @@ public class EnginePreferences {
     }
 
     public void loadState(DatabaseHelper db) {
-        String val = db.getSetting(PREF_ENGINE, EngineType.GECKO.name());
+        String val = db.getSetting(PREF_ENGINE, EngineType.CHROMIUM.name());
         try {
             currentEngine = EngineType.valueOf(val);
         } catch (IllegalArgumentException e) {
-            currentEngine = EngineType.GECKO;
+            currentEngine = EngineType.CHROMIUM;
         }
     }
 

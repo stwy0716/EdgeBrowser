@@ -1,6 +1,8 @@
 package com.edge.browser.webview;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import com.edge.browser.BrowserLogger;
@@ -12,15 +14,23 @@ import org.mozilla.geckoview.GeckoRuntimeSettings;
 /**
  * GeckoRuntime 管理器
  * 全局单例，管理 Gecko 引擎生命周期
+ * 注意：Gecko 初始化在后台线程执行，避免 Native 崩溃影响主线程
  */
 public class GeckoRuntimeManager {
 
     private static final String TAG = "GeckoRuntimeManager";
     private static GeckoRuntimeManager instance;
     private GeckoRuntime runtime;
-    private boolean isInitialized = false;
+    private volatile boolean isInitialized = false;
+    private volatile boolean isInitializing = false;
+    private final HandlerThread initThread;
+    private final Handler initHandler;
 
-    private GeckoRuntimeManager() {}
+    private GeckoRuntimeManager() {
+        initThread = new HandlerThread("GeckoInit");
+        initThread.start();
+        initHandler = new Handler(initThread.getLooper());
+    }
 
     public static synchronized GeckoRuntimeManager getInstance() {
         if (instance == null) {
@@ -31,34 +41,42 @@ public class GeckoRuntimeManager {
 
     /**
      * 初始化 Gecko 引擎 (GeckoView = Firefox 内核)
+     * 在后台线程执行，避免阻塞主线程
      */
     public synchronized void init(Context context) {
-        if (isInitialized || runtime != null) return;
+        if (isInitialized || runtime != null || isInitializing) return;
+        isInitializing = true;
 
-        try {
-            GeckoRuntimeSettings settings = new GeckoRuntimeSettings.Builder()
-                    .javaScriptEnabled(true)
-                    .remoteDebuggingEnabled(false)
-                    .consoleOutput(true)
-                    .aboutConfigEnabled(false)
-                    .automaticFontSizeAdjustment(true)
-                    .fontSizeFactor(1.0f)
-                    .inputAutoZoomEnabled(true)
-                    .loginAutofillEnabled(true)
-                    .build();
-
-            runtime = GeckoRuntime.create(context, settings);
-
-            BrowserLogger.getInstance().i(TAG, LogCategory.SYSTEM,
-                    "Gecko 引擎初始化成功 (Firefox 内核)");
-            isInitialized = true;
-        } catch (Throwable t) {
-            Log.e(TAG, "Gecko 引擎初始化失败", t);
+        final Context appContext = context.getApplicationContext();
+        initHandler.post(() -> {
             try {
-                BrowserLogger.getInstance().logCrash("GeckoRuntime init", t instanceof Exception ? (Exception) t : new Exception(t));
-            } catch (Throwable ignored) {}
-            isInitialized = false;
-        }
+                GeckoRuntimeSettings settings = new GeckoRuntimeSettings.Builder()
+                        .javaScriptEnabled(true)
+                        .remoteDebuggingEnabled(false)
+                        .consoleOutput(true)
+                        .aboutConfigEnabled(false)
+                        .automaticFontSizeAdjustment(true)
+                        .fontSizeFactor(1.0f)
+                        .inputAutoZoomEnabled(true)
+                        .loginAutofillEnabled(true)
+                        .build();
+
+                runtime = GeckoRuntime.create(appContext, settings);
+
+                BrowserLogger.getInstance().i(TAG, LogCategory.SYSTEM,
+                        "Gecko 引擎初始化成功 (Firefox 内核)");
+                isInitialized = true;
+            } catch (Throwable t) {
+                Log.e(TAG, "Gecko 引擎初始化失败", t);
+                try {
+                    BrowserLogger.getInstance().logCrash("GeckoRuntime init",
+                            t instanceof Exception ? (Exception) t : new Exception(t));
+                } catch (Throwable ignored) {}
+                isInitialized = false;
+            } finally {
+                isInitializing = false;
+            }
+        });
     }
 
     public GeckoRuntime getRuntime(Context context) {
