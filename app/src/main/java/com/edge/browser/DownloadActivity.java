@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.edge.browser.download.DownloadManager;
 import com.edge.browser.download.DownloadService;
@@ -147,22 +147,21 @@ public class DownloadActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             DownloadService.DownloadTask task = tasks.get(position);
             holder.fileName.setText(task.getFileName());
-            holder.fileSize.setText(formatSize(task.getTotalSize()));
             holder.progressBar.setProgress(task.getProgress());
 
             if (task.isCompleted()) {
-                holder.statusText.setText("已完成");
+                holder.statusText.setText(formatSize(task.getTotalSize()) + " - 已完成");
                 holder.progressBar.setVisibility(View.GONE);
             } else if (task.isFailed()) {
                 holder.statusText.setText("失败: " + task.getErrorMessage());
                 holder.progressBar.setVisibility(View.GONE);
             } else if (task.isPaused()) {
-                holder.statusText.setText("已暂停");
+                holder.statusText.setText(formatSize(task.getTotalSize()) + " - 已暂停");
             } else if (task.isCancelled()) {
                 holder.statusText.setText("已取消");
                 holder.progressBar.setVisibility(View.GONE);
             } else {
-                holder.statusText.setText(task.getProgress() + "%");
+                holder.statusText.setText(formatSize(task.getTotalSize()) + " - " + task.getProgress() + "%");
             }
 
             holder.btnCancel.setOnClickListener(v -> {
@@ -184,14 +183,13 @@ public class DownloadActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            TextView fileName, fileSize, statusText;
+            TextView fileName, statusText;
             ProgressBar progressBar;
-            Button btnCancel;
+            ImageButton btnCancel;
 
             ViewHolder(View itemView) {
                 super(itemView);
                 fileName = itemView.findViewById(R.id.download_title);
-                fileSize = itemView.findViewById(R.id.download_status);
                 statusText = itemView.findViewById(R.id.download_status);
                 progressBar = itemView.findViewById(R.id.download_progress);
                 btnCancel = itemView.findViewById(R.id.btn_cancel);

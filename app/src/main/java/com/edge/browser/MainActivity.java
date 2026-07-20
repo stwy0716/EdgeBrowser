@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            EdgeApplication.setMainActivity(this);
             initManagers();
             setContentView(R.layout.activity_main);
             initViews();
@@ -1249,6 +1250,7 @@ public class MainActivity extends AppCompatActivity implements TabPagerAdapter.W
             clearOnExitManager.executeClear(MainActivity.this);
         }
         if (gestureController != null) gestureController.detach();
+        EdgeApplication.setMainActivity(null);
         super.onDestroy();
         for (IBrowserView wv : webViewCache.values()) {
             try { wv.destroy(); } catch (Exception ignored) {}
